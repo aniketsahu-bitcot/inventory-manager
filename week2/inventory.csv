@@ -1,0 +1,8 @@
+product_id,product_name,quantity,price
+P001,Wireless Mouse,25,499.99
+P002,Rice Bag 5kg,4,299.00
+P003,Python Programming Book,15,799.50
+P004,Milk Packet 1L,twenty,55.00
+P005,Notebook A4,50,-45.00
+P006,Bread Loaf,,35.00
+P007,Data Science Handbook,10,free

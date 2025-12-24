@@ -1,0 +1,12 @@
+Row 5 failed validation:
+ - quantity: Input should be a valid integer, unable to parse string as an integer
+
+Row 6 failed validation:
+ - price: Input should be greater than 0
+
+Row 7 failed validation:
+ - quantity: Input should be a valid integer, unable to parse string as an integer
+
+Row 8 failed validation:
+ - price: Input should be a valid number, unable to parse string as a number
+
