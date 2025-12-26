@@ -19,7 +19,7 @@ A professional command-line Python package for inventory management.
 ---
 
 ### Learning Journey
-- [Week 1 to 2 Overview](Docs/INDEX.md)
+- [Week 1 to 3 Overview](Docs/INDEX.md)
 - [Architecture](Docs/ARCHITECTURE.md)
 - [Setup & Installation](Docs/SETUP.md)
 - [Testing Guide](Docs/TESTING.md)
