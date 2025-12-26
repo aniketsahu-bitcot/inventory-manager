@@ -1,0 +1,12 @@
+Row 5 failed validation:
+ - Quantity and price must be numeric.
+
+Row 6 failed validation:
+ - Price must be a positive number
+
+Row 7 failed validation:
+ - Quantity and price must be numeric.
+
+Row 8 failed validation:
+ - Quantity and price must be numeric.
+

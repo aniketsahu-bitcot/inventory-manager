@@ -1,0 +1,23 @@
+[project]
+name = "inventory_manager"                    
+version = "0.1.0"                             
+description = "Simple inventory management with Product/Inventory classes"  
+authors = [{ name = "Aniket Sahu" }]         
+readme = "README.md"                         
+requires-python = ">=3.10"                    
+
+dependencies = [
+    "pydantic>=2.0.0",                                            
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5.0",                            
+    "black>=24.0.0",                           
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.black]
+line-length = 88                   
