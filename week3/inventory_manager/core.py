@@ -146,7 +146,7 @@ class Inventory:
     def generate_low_stock_report(
         self,
         threshold: int = 10,
-        output_file: Path | str = "low_stock_report.txt",
+        output_file: Path | str = "week3/low_stock_report.txt",
     ) -> None:
         """Generate a report listing products below the given stock threshold.
 
