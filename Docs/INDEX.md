@@ -19,7 +19,7 @@ A professional command-line Python package for inventory management that reads i
 - Generates low_stock_report.txt for items below a quantity threshold.
 - Organized with small, clear functions (load_and_validate_products, generate_low_stock_report).
 
-### Week 3: OOP Refactoring & Enhancements
+#### Week 3: OOP Refactoring & Enhancements
 - `Product` class bundles data & methods and follows Object-Oriented Design
 - `Product` and `Inventory` both classes are following Single Responsibility Principle (SRP).
 - Base `Product` with subclasses extensible without modification. This means it is following Inheritance and OCP correctly.
