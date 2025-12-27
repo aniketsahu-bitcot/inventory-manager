@@ -94,3 +94,17 @@ Run a Python file:
 ```bash
 python process_inventory.py
 ```
+
+#### Week 3 Run Instructions
+
+Navigate to the `week3` folder:
+
+```bash
+cd week3
+```
+
+Run a Python file:
+
+```bash
+python main.py
+```
