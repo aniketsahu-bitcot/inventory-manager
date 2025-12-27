@@ -73,10 +73,12 @@ class Inventory:
         Invalid rows are logged to 'errors.log'.
 
         Args:
-           csv_file_path (Path | str): Path to the CSV file.
+            csv_file_path (Path | str): Path to the CSV file.
 
         Raises:
-           FileNotFoundError: If the CSV file does not exist.
+            FileNotFoundError: If the CSV file does not exist.
+            PermissionError: If unable to read CSV file or write errors.log.
+            IOError: If other file I/O errors occur.
         """
         csv_file_path = Path(csv_file_path)
 
@@ -84,25 +86,30 @@ class Inventory:
             raise FileNotFoundError(f"File not found: {csv_file_path}")
 
         errors_file = csv_file_path.parent / "errors.log"
+        
+        
         errors_file.write_text("", encoding="utf-8")
 
-        with csv_file_path.open("r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-
-            for row_number, row in enumerate(reader, start=2):
-                try:
-                    product = Product(
-                        product_id=row["product_id"],
-                        product_name=row["product_name"],
-                        quantity=row["quantity"],
-                        price=row["price"],
-                    )
-                    self.add_product(product)
-
-                except Exception as e:
-                    with errors_file.open("a", encoding="utf-8") as ef:
-                        ef.write(f"Row {row_number} failed validation:\n")
-                        ef.write(f" - {str(e)}\n\n")
+        
+        try:
+            with csv_file_path.open("r", encoding="utf-8") as file:
+                reader = csv.DictReader(file)
+                for row_number, row in enumerate(reader, start=2):
+                    try:
+                        product = Product(
+                            product_id=row["product_id"],
+                            product_name=row["product_name"],
+                            quantity=row["quantity"],
+                            price=row["price"],
+                        )
+                        self.add_product(product)
+                    except Exception as e:
+                        
+                        with errors_file.open("a", encoding="utf-8") as ef:
+                            ef.write(f"Row {row_number} failed validation:\n")
+                            ef.write(f" - {str(e)}\n\n")
+        except (PermissionError, IOError) as e:
+            raise PermissionError(f"Cannot read CSV file {csv_file_path}: {e}") from e
 
 
     def get_low_stock(self, threshold: int = 10) -> Iterable[Product]:
