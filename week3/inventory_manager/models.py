@@ -23,6 +23,20 @@ class Product(BaseModel):
     quantity: int = Field(ge=0, description="Quantity must be a non-negative integer")
     price: float = Field(gt=0, description="Price must be a positive number")
 
+    @field_validator("quantity")
+    @classmethod
+    def validate_quantity_non_negative(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("Quantity cannot be negative.")
+        return value
+
+    @field_validator("price")
+    @classmethod
+    def validate_price_positive(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("Price must be greater than zero.")
+        return value
+
     def get_total_value(self) -> float:
         """Calculate total inventory value for this product.
 
