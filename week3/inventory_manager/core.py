@@ -94,8 +94,8 @@ class Inventory:
                     product = Product(
                         product_id=row["product_id"],
                         product_name=row["product_name"],
-                        quantity=int(row["quantity"]),
-                        price=float(row["price"]),
+                        quantity=row["quantity"],
+                        price=row["price"],
                     )
                     self.add_product(product)
 
