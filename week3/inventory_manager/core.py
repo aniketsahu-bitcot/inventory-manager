@@ -34,7 +34,8 @@ class Inventory:
             None
         """
 
-        self.products = []
+        self.products: List[Product] = []
+        self._product_map: dict[str, Product] = {}         
 
     def add_product(self, product: "Product") -> None:
         """Add a product to the inventory.
@@ -48,9 +49,10 @@ class Inventory:
         Raises:
             ValueError: If a product with the same ID already exists.
         """
-        if self.get_product(product.product_id):
+        if product.product_id in self._product_map:
             raise ValueError(f"Product with ID '{product.product_id}' already exists.")
         self.products.append(product)
+        self._product_map[product.product_id] = product
 
     def get_product(self, product_id: str) -> "Product | None":
         """Retrieve a product by its ID.
@@ -61,10 +63,7 @@ class Inventory:
         Returns:
             Product | None: The product if found; otherwise, None.
         """
-        for product in self.products:
-            if product.product_id == product_id:
-                return product
-        return None
+        return self._product_map.get(product_id)
 
 
 
