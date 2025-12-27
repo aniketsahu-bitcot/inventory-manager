@@ -64,7 +64,7 @@ except ValueError as e:
 
 csv_path = Path("inventory.csv")
 try:
-    inventory.load_and_validate_products(csv_path)
+    inventory.load_products_from_csv(csv_path)
 except FileNotFoundError as e:
     print(e)
 

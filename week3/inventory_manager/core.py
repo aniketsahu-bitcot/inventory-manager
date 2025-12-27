@@ -66,19 +66,17 @@ class Inventory:
                 return product
         return None
 
-    def load_and_validate_products(self, csv_file_path: Path | str) -> None:
-        """Load and validate products from a CSV file.
 
-        Invalid rows are logged into `errors.log` in the same folder.
+    def load_products_from_csv(self, csv_file_path: Path | str) -> None:
+        """Load products from a CSV file and add them to the inventory.
+
+        Invalid rows are logged to 'errors.log'.
 
         Args:
-            csv_file_path (Path | str): Path to the CSV file.
-
-        Returns:
-            None    
+           csv_file_path (Path | str): Path to the CSV file.
 
         Raises:
-            FileNotFoundError: If the CSV file does not exist.
+           FileNotFoundError: If the CSV file does not exist.
         """
         csv_file_path = Path(csv_file_path)
 
@@ -93,24 +91,19 @@ class Inventory:
 
             for row_number, row in enumerate(reader, start=2):
                 try:
-                    try:
-                        quantity = int(row["quantity"])
-                        price = float(row["price"])
-                    except ValueError:
-                        raise ValueError("Quantity and price must be numeric.")
-
                     product = Product(
                         product_id=row["product_id"],
                         product_name=row["product_name"],
-                        quantity=quantity,
-                        price=price,
+                        quantity=int(row["quantity"]),
+                        price=float(row["price"]),
                     )
-                    self.products.append(product)
+                    self.add_product(product)
 
                 except Exception as e:
                     with errors_file.open("a", encoding="utf-8") as ef:
                         ef.write(f"Row {row_number} failed validation:\n")
                         ef.write(f" - {str(e)}\n\n")
+
 
     def get_low_stock(self, threshold: int = 10) -> Iterable[Product]:
         """Return products with quantity below a defined threshold.
