@@ -67,6 +67,7 @@ class Inventory:
         return None
 
 
+
     def load_products_from_csv(self, csv_file_path: Path | str) -> None:
         """Load products from a CSV file and add them to the inventory.
 
@@ -79,18 +80,22 @@ class Inventory:
             FileNotFoundError: If the CSV file does not exist.
             PermissionError: If unable to read CSV file or write errors.log.
             IOError: If other file I/O errors occur.
+            ValueError: If the path value is not valid.
         """
-        csv_file_path = Path(csv_file_path)
 
+        
+        try:
+            csv_file_path = Path(csv_file_path)
+        except TypeError as e:
+            raise ValueError("csv_file_path must be a valid path or string") from e
+
+        
         if not csv_file_path.exists():
             raise FileNotFoundError(f"File not found: {csv_file_path}")
 
         errors_file = csv_file_path.parent / "errors.log"
-        
-        
         errors_file.write_text("", encoding="utf-8")
 
-        
         try:
             with csv_file_path.open("r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
@@ -104,7 +109,6 @@ class Inventory:
                         )
                         self.add_product(product)
                     except Exception as e:
-                        
                         with errors_file.open("a", encoding="utf-8") as ef:
                             ef.write(f"Row {row_number} failed validation:\n")
                             ef.write(f" - {str(e)}\n\n")
