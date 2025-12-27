@@ -44,8 +44,6 @@ phone = ElectronicProduct(
     warranty_period=18,
 )
 
-inventory = Inventory()
-
 book = BookProduct(
     product_id="B001",
     product_name="Clean Code",
@@ -54,54 +52,71 @@ book = BookProduct(
     author="Robert C. Martin",
 )
 
-try:
-    inventory.add_product(product)
-    inventory.add_product(milk)
-    inventory.add_product(phone)
-    inventory.add_product(book)
-except ValueError as e:
-    print(f"Error adding product: {e}")
 
-csv_path = Path("inventory.csv")
-try:
-    inventory.load_products_from_csv(csv_path)
-except FileNotFoundError as e:
-    print(e)
 
 try:
-    inventory.add_product(Product(
-        product_id="P010",
-        product_name="Monitor",
-        quantity=15,
-        price=199.99,
-    ))
-    inventory.add_product(Product(
-        product_id="P011",
-        product_name="Headset",
-        quantity=30,
-        price=49.99,
-    ))
-except ValueError as e:
-    print(f"Error adding product: {e}")
-
-product = inventory.get_product("P010")
-if product:
-    print(
-        f"Retrieved product: {product.product_name} - "
-        f"Quantity: {product.quantity} - Price: {product.price}"
-    )
+    inventory = Inventory()
+except Exception as e:
+    print(f"Failed to create Inventory: {e}")
 else:
-    print("Product not found.")
+    try:
+        inventory.add_product(product)
+        inventory.add_product(milk)
+        inventory.add_product(phone)
+        inventory.add_product(book)
+    except ValueError as e:
+        print(f"Error adding product: {e}")
 
-inventory.generate_low_stock_report(threshold=10)
+    csv_path = Path("inventory.csv")
 
-print(f"\nProcessed {len(inventory.products)} valid products.")
-print("Errors (if any) are logged in errors.log")
-print("Low stock report generated: low_stock_report.txt")
+    try:
+        inventory.load_products_from_csv(csv_path)
+    except FileNotFoundError:
+        print(f"CSV file not found: {csv_path}")
+    except Exception as e:
+        print(f"Unexpected error loading CSV: {e}")
 
-print("\nAll products in inventory:")
-for p in inventory.products:
-    print(
-        f"{p.product_id}: {p.product_name} - "
-        f"Quantity: {p.quantity} - Total Value: {p.get_total_value():.2f}"
-    )
+    try:
+        inventory.add_product(Product(
+            product_id="P010",
+            product_name="Monitor",
+            quantity=15,
+            price=199.99,
+        ))
+        inventory.add_product(Product(
+            product_id="P011",
+            product_name="Headset",
+            quantity=30,
+            price=49.99,
+        ))
+    except ValueError as e:
+        print(f"Error adding product: {e}")
+
+    try:
+        product = inventory.get_product("P010")
+        if product:
+            print(
+                f"Retrieved product: {product.product_name} - "
+                f"Quantity: {product.quantity} - Price: {product.price}"
+            )
+        else:
+            print("Product not found.")
+    except Exception as e:
+        print(f"Error retrieving product: {e}")
+
+    try:
+        inventory.generate_low_stock_report(threshold=10)
+    except Exception as e:
+        print(f"Error generating low stock report: {e}")
+
+    print(f"\nProcessed {len(inventory.products)} valid products.")
+    print("Errors (if any) are logged in errors.log")
+    print("Low stock report generated: low_stock_report.txt")
+
+    print("\nAll products in inventory:")
+    for p in inventory.products:
+        print(
+            f"{p.product_id}: {p.product_name} - "
+            f"Quantity: {p.quantity} - Total Value: {p.get_total_value():.2f}"
+        )
+
