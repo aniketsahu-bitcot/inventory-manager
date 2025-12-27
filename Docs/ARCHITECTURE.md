@@ -26,8 +26,7 @@ INVENTORY-MANAGER
     ├── inventory_manager
     │   ├── core.py
     │   ├── __init__.py
-    │   ├── models.py
-    │   └── __pycache__
+    │   └── models.py
     ├── low_stock_report.txt
     └── main.py  
 ```
