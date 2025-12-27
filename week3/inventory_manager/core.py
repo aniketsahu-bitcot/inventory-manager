@@ -1,26 +1,7 @@
-"""
-Inventory Management Core Module
+"""Inventory Management Module.
 
-This module provides the central Inventory class for managing collections of
-Product objects. It handles product addition, retrieval, CSV loading with
-validation, and low stock reporting.
-
-Main Components:
-    Inventory class:
-        - add_product(): Add validated products with duplicate checking
-        - get_product(): Retrieve products by unique ID
-        - load_and_validate_products(): CSV import with error logging
-        - generate_low_stock_report(): Automated stock monitoring reports
-
-Dependencies:
-    - inventory_manager.models.Product
-    - pathlib.Path, csv, typing
-
-Usage Example:
-    inventory = Inventory()
-    inventory.add_product(Product("P001", "Laptop", 10, 999.99))
-    inventory.load_and_validate_products("products.csv")
-    inventory.generate_low_stock_report(threshold=5)
+Defines the `Inventory` class for managing `Product` objects, including CSV
+loading, validation, and low-stock reporting.
 """
 
 import csv
