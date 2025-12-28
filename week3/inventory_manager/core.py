@@ -88,18 +88,17 @@ class Inventory:
         except TypeError as e:
             raise ValueError("csv_file_path must be a valid path or string") from e
 
-        
-        if not csv_file_path.exists():
-            raise FileNotFoundError(f"File not found: {csv_file_path}")
-
         errors_file = csv_file_path.parent / "errors.log"
 
         try:
-            errors_file.write_text("", encoding="utf-8")
-        except (PermissionError, OSError) as e:
-            raise PermissionError(f"Cannot create/write {errors_file}: {e}") from e
+            
+            if not csv_file_path.exists():
+                raise FileNotFoundError(f"File not found: {csv_file_path}")
 
-        try:
+            
+            errors_file.write_text("", encoding="utf-8")
+
+            
             with csv_file_path.open("r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
 
@@ -122,7 +121,7 @@ class Inventory:
                             pass
 
         except (PermissionError, OSError) as e:
-            raise PermissionError(f"Cannot read CSV file {csv_file_path}: {e}") from e
+            raise PermissionError(f"File I/O error while processing {csv_file_path}: {e}") from e
 
 
     def get_low_stock(self, threshold: int = 10) -> Iterable[Product]:
