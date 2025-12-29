@@ -164,3 +164,6 @@ class Inventory:
             else:
                 for p in low_stock_products:
                     f.write(f"{p.product_name} - Quantity: {p.quantity}\n")
+
+
+print("Inventory module loaded.")
