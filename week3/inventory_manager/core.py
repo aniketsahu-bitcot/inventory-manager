@@ -85,19 +85,18 @@ class Inventory:
         
         try:
             csv_file_path = Path(csv_file_path)
-        except TypeError as e:
-            raise ValueError("csv_file_path must be a valid path or string") from e
-
-        errors_file = csv_file_path.parent / "errors.log"
-
-        try:
+            errors_file = csv_file_path.parent / "errors.log"
             
             if not csv_file_path.exists():
                 raise FileNotFoundError(f"File not found: {csv_file_path}")
-
             
-            errors_file.write_text("", encoding="utf-8")
-
+            
+            try:
+                errors_file.write_text("", encoding="utf-8")
+            except (PermissionError, OSError) as e:
+                raise PermissionError(
+                    f"Cannot create/write errors.log in {csv_file_path.parent}: {e}"
+                ) from e
             
             with csv_file_path.open("r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
@@ -118,9 +117,11 @@ class Inventory:
                                 ef.write(f"Row {row_number} failed validation:\n")
                                 ef.write(f" - {str(e)}\n\n")
                         except (PermissionError, OSError):
-                            pass
+                            pass  
 
-        except (PermissionError, OSError) as e:
+        except (TypeError, PermissionError, OSError) as e:
+            if isinstance(e, TypeError):
+                raise ValueError("csv_file_path must be a valid path or string") from e
             raise PermissionError(f"File I/O error while processing {csv_file_path}: {e}") from e
 
 

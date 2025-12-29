@@ -111,5 +111,3 @@ else:
 
 
 
-print("\nInventory Management Demo completed.")
-
