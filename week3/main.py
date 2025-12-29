@@ -109,3 +109,7 @@ else:
             f"Quantity: {p.quantity} - Total Value: {p.get_total_value():.2f}"
         )
 
+
+
+print("\nInventory Management Demo completed.")
+
