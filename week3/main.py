@@ -108,6 +108,8 @@ else:
             f"{p.product_id}: {p.product_name} - "
             f"Quantity: {p.quantity} - Total Value: {p.get_total_value():.2f}"
         )
+    total_value = inventory.get_inventory_value()
+    print(f"\nTotal inventory value: {total_value:.2f}")
 
 
 

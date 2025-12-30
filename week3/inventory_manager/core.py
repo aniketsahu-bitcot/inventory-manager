@@ -166,4 +166,13 @@ class Inventory:
                     f.write(f"{p.product_name} - Quantity: {p.quantity}\n")
 
 
-print("Inventory module loaded.")
+
+
+    def get_inventory_value(self) -> float:
+     
+     """Return the total value of all products currently in stock.
+
+     Returns:
+        float: Sum of quantity * price for every product.
+     """
+     return sum(p.quantity * p.price for p in self.products)
