@@ -4,6 +4,9 @@ edge cases, error conditions, and boundary values using pytest fixtures.
 """
 
 import pytest
+from unittest.mock import mock_open
+from unittest.mock import call
+from pathlib import Path
 from week3.inventory_manager.core import Inventory
 from week3.inventory_manager.models import (
     Product,
@@ -274,3 +277,320 @@ def test_get_inventory_value_includes_zero_quantity_item(
     result = inventory.get_inventory_value()
 
     assert result == expected_total
+
+
+
+def test_load_products_from_csv_populates_inventory(mocker) -> None:
+    """Inventory should load valid rows from CSV using mocked builtins.open."""
+
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "P001,Laptop,5,1000.0\n"
+        "P002,Mouse,10,25.5\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inventory = Inventory()
+
+    inventory.load_products_from_csv(Path("fake.csv"))
+
+    assert len(inventory.products) == 2
+
+    p1 = inventory.products[0]
+    assert p1.product_id == "P001"
+    assert p1.product_name == "Laptop"
+    assert int(p1.quantity) == 5
+    assert float(p1.price) == 1000.0
+
+    p2 = inventory.products[1]
+    assert p2.product_id == "P002"
+    assert p2.product_name == "Mouse"
+    assert int(p2.quantity) == 10
+    assert float(p2.price) == 25.5
+
+def test_load_products_from_csv_handles_blank_lines(mocker) -> None:
+    """Ensure blank lines in the CSV do not break processing and valid rows load."""
+
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "\n"
+        "P001,Laptop,5,1000.0\n"
+        "\n"
+        "P002,Mouse,10,25.5\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 2
+
+def test_load_products_from_csv_header_only_results_in_empty_inventory(mocker) -> None:
+    """Verify that when only a header row exists, no products are added."""
+
+    csv_data = "product_id,product_name,quantity,price\n"
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 0
+
+def test_load_products_from_csv_ignores_trailing_newlines(mocker) -> None:
+    """Confirm extra trailing newline characters do not affect processing."""
+
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "P001,Laptop,5,1000.0\n\n\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 1
+
+def test_load_products_from_csv_allows_zero_quantity(mocker) -> None:
+    """Verify zero quantity is still treated as a valid product."""
+
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "P001,Laptop,0,1000.0\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 1
+    assert int(inv.products[0].quantity) == 0
+
+def test_load_products_from_csv_rejects_zero_price(mocker) -> None:
+    """Verify rows with zero price are treated as invalid and skipped."""
+
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "P001,Laptop,5,0\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open(read_data=csv_data)
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 0
+
+def test_load_products_from_csv_for_invalid_path_type(mocker) -> None:
+    """If a non-path / non-string is passed, ValueError should be raised."""
+
+    inv = Inventory()
+
+    with pytest.raises(ValueError):
+        inv.load_products_from_csv(12345)  
+
+def test_load_products_from_csv_when_csv_cannot_be_read(mocker) -> None:
+    """If the CSV exists but cannot be opened for reading, PermissionError should be raised."""
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    m = mock_open()
+    m.side_effect = PermissionError("blocked")
+    mocker.patch("builtins.open", m)
+    mocker.patch.object(Path, "open", m)
+
+    mocker.patch.object(Path, "write_text", return_value=None)
+
+    inv = Inventory()
+
+    with pytest.raises(PermissionError):
+        inv.load_products_from_csv("fake.csv")
+
+
+def test_report_writes_only_low_stock_items(mocker) -> None:
+    """Ensure only low stock products appear in the report."""
+   
+    inventory = Inventory()
+    inventory.products = [
+        Product(product_id="P1", product_name="Laptop", quantity=3, price=1000.0),
+        Product(product_id="P2", product_name="Mouse", quantity=15, price=20.0),
+    ]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    inventory.generate_low_stock_report(10, "dummy.txt")
+
+    handle = mock_file()
+    written_text = "".join(call.args[0] for call in handle.write.call_args_list)
+
+    assert "Laptop - Quantity: 3" in written_text
+    assert "Mouse - Quantity: 15" not in written_text
+
+def test_report_handles_all_items_sufficient(mocker) -> None:
+    """Verify the report states all products are sufficient when none qualify."""
+   
+    inventory = Inventory()
+    inventory.products = [
+        Product(product_id="P1", product_name="Phone", quantity=20, price=500.0),
+    ]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    inventory.generate_low_stock_report(threshold=5, output_file="dummy.txt")
+
+    handle = mock_file()
+    handle.write.assert_has_calls(
+        [
+            call("Low Stock Report:\n\n"),
+            call("All products have sufficient stock.\n"),
+        ]
+    )
+
+def test_report_when_inventory_is_empty(mocker) -> None:
+    """Verify the report handles an empty inventory gracefully."""
+   
+    inventory = Inventory()
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    inventory.generate_low_stock_report(output_file="dummy.txt")
+
+    handle = mock_file()
+    handle.write.assert_has_calls(
+        [
+            call("Low Stock Report:\n\n"),
+            call("All products have sufficient stock.\n"),
+        ]
+    )
+
+def test_report_includes_items_equal_to_limit(mocker) -> None:
+    """Confirm an item exactly at the threshold is not included."""
+    
+    inventory = Inventory()
+    inventory.products = [
+        Product(product_id="P1", product_name="Tablet", quantity=10, price=300.0),
+    ]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    inventory.generate_low_stock_report(threshold=10, output_file="dummy.txt")
+
+    handle = mock_file()
+    handle.write.assert_has_calls(
+        [
+            call("Low Stock Report:\n\n"),
+            call("All products have sufficient stock.\n"),
+        ]
+    )
+
+def test_report_with_item_quantity_zero(mocker) -> None:
+    """Ensure products with quantity zero are included if threshold > 0."""
+    
+    inventory = Inventory()
+    inventory.products = [
+        Product(product_id="P1", product_name="ItemZero", quantity=0, price=10.0),
+    ]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    inventory.generate_low_stock_report(threshold=1, output_file="dummy.txt")
+    
+    handle = mock_file()
+    handle.write.assert_has_calls([
+        call("Low Stock Report:\n\n"),
+        call("ItemZero - Quantity: 0\n"),
+    ])
+
+def test_report_permission_denied(mocker) -> None:
+    """Raise error if the file cannot be written due to permission issues."""
+    
+    inventory = Inventory()
+    inventory.products = [
+        Product(product_id="P1", product_name="Item", quantity=2, price=10.0),
+    ]
+
+    def raise_permission(*args, **kwargs):
+        raise PermissionError("Permission denied")
+
+    mocker.patch("pathlib.Path.open", side_effect=raise_permission)
+
+    with pytest.raises(PermissionError):
+        inventory.generate_low_stock_report(output_file="dummy.txt")
+
+def test_report_missing_product_name(mocker) -> None:
+    """Raise an error if a product in inventory has missing product_name."""
+    
+    inventory = Inventory()
+    
+    class IncompleteProduct:
+        product_id = "P1"
+        quantity = 5
+        price = 10.0
+    
+    inventory.products = [IncompleteProduct()]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    with pytest.raises(AttributeError):
+        inventory.generate_low_stock_report(output_file="dummy.txt")
+
+def test_report_invalid_quantity_type(mocker) -> None:
+    """Raise TypeError if a product's quantity is not an integer."""
+    
+    inventory = Inventory()
+ 
+    class InvalidQuantityProduct:
+        product_id = "P1"
+        product_name = "Item"
+        quantity = "ten"
+        price = 10.0
+    
+    inventory.products = [InvalidQuantityProduct()]
+
+    mock_file = mock_open()
+    mocker.patch.object(Path, "open", mock_file)
+
+    with pytest.raises(TypeError):
+        inventory.generate_low_stock_report(output_file="dummy.txt")
+
+
+
