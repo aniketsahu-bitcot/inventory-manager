@@ -117,13 +117,6 @@ def invalid_negative_price_data() -> dict:
 
 
 @pytest.fixture
-def invalid_negative_qty_data() -> dict:
-    """Fixture to create product data with negative quantity."""
-    return dict(product_id="P041", product_name="Invalid Negative Qty", quantity=-5, price=100.0)
-
-
-
-@pytest.fixture
 def food_bread() -> FoodProduct:
     """Fixture to create a FoodProduct with a valid future expiry date."""
     return FoodProduct(product_id="F001", product_name="Bread", quantity=20, price=2.5,
