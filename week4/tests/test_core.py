@@ -280,6 +280,7 @@ def test_get_inventory_value_includes_zero_quantity_item(
 
 
 
+
 def test_load_products_from_csv_populates_inventory(mocker) -> None:
     """Inventory should load valid rows from CSV using mocked builtins.open."""
 
@@ -292,7 +293,11 @@ def test_load_products_from_csv_populates_inventory(mocker) -> None:
     mocker.patch.object(Path, "exists", return_value=True)
 
     m = mock_open(read_data=csv_data)
+
+    mocker.patch("builtins.open", m)
+
     mocker.patch.object(Path, "open", m)
+
     mocker.patch.object(Path, "write_text", return_value=None)
 
     inventory = Inventory()
@@ -312,6 +317,7 @@ def test_load_products_from_csv_populates_inventory(mocker) -> None:
     assert p2.product_name == "Mouse"
     assert int(p2.quantity) == 10
     assert float(p2.price) == 25.5
+
 
 def test_load_products_from_csv_handles_blank_lines(mocker) -> None:
     """Ensure blank lines in the CSV do not break processing and valid rows load."""
