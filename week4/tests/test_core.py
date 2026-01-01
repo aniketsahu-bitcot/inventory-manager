@@ -446,6 +446,15 @@ def test_load_products_from_csv_when_csv_cannot_be_read(mocker) -> None:
         inv.load_products_from_csv("fake.csv")
 
 
+def test_load_products_from_csv_file_not_found(mocker):
+    mocker.patch.object(Path, "exists", return_value=False)
+
+    inv = Inventory()
+
+    with pytest.raises(PermissionError):
+        inv.load_products_from_csv("missing.csv")
+
+
 def test_report_writes_only_low_stock_items(mocker) -> None:
     """Ensure only low stock products appear in the report."""
    
@@ -598,5 +607,46 @@ def test_report_invalid_quantity_type(mocker) -> None:
     with pytest.raises(TypeError):
         inventory.generate_low_stock_report(output_file="dummy.txt")
 
+
+
+def test_errors_log_write_fails(mocker):
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    mocker.patch.object(Path, "open", mock_open(read_data="product_id,product_name,quantity,price\n"))
+
+    mocker.patch.object(Path, "write_text", side_effect=PermissionError("Denied"))
+
+    inv = Inventory()
+
+    with pytest.raises(PermissionError):
+        inv.load_products_from_csv("fake.csv")
+
+
+def test_error_log_write_failure_is_ignored(mocker):
+    csv_data = (
+        "product_id,product_name,quantity,price\n"
+        "P1,Laptop,5,0\n"
+    )
+
+    mocker.patch.object(Path, "exists", return_value=True)
+
+    csv_mock = mock_open(read_data=csv_data)
+
+    def error_log_mock(*args, **kwargs):
+        raise PermissionError("no write")
+
+    def fake_open(self, mode="r", *args, **kwargs):
+        if str(self).endswith("fake.csv") and "r" in mode:
+            return csv_mock()
+        if str(self).endswith("errors.log") and "a" in mode:
+            return error_log_mock()
+        return mock_open()()
+
+    mocker.patch.object(Path, "open", fake_open)
+
+    inv = Inventory()
+    inv.load_products_from_csv("fake.csv")
+
+    assert len(inv.products) == 0
 
 

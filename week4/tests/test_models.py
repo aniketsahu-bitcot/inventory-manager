@@ -5,6 +5,7 @@ inputs. All tests use the Product class from the inventory_manager package.
 """
 
 import pytest
+from datetime import timedelta
 from typing import Dict, Any
 from pydantic import ValidationError
 from datetime import date
@@ -865,4 +866,200 @@ def test_book_product_get_total_value_single_unit(book_single_qty: BookProduct) 
     assert total_value == product.price
 
 
+
+@pytest.mark.parametrize(
+    "expiry",
+    [
+        date.today() + timedelta(days=1),
+        date.today() + timedelta(days=30),
+        date.today() + timedelta(days=365),
+        date.today() + timedelta(days=365*2),  
+        date.today() + timedelta(days=10_000), 
+    ],
+)
+def test_foodproduct_expiry(expiry: date) -> None:
+    """Test FoodProduct expiry validator with valid future dates."""
+    
+    product = FoodProduct(
+        product_id="F1",
+        product_name="Milk",
+        quantity=10,
+        price=5.0,
+        expiry_date=expiry,
+    )
+
+    
+    assert product.expiry_date == expiry
+
+
+@pytest.mark.parametrize(
+    "expiry",
+    [
+        date.today(),                       
+        date.today() + timedelta(seconds=1),  
+        date.today() + timedelta(minutes=1), 
+    ],
+)
+def test_foodproduct_expiry_today(expiry: date) -> None:
+    """Test FoodProduct expiry validator with edge dates close to today."""
+    
+    product = FoodProduct(
+        product_id="F2",
+        product_name="Bread",
+        quantity=5,
+        price=3.5,
+        expiry_date=expiry,
+    )
+
+    assert product.expiry_date == expiry
+
+
+@pytest.mark.parametrize(
+    "expiry, should_pass",
+    [
+        (date.today() - timedelta(days=1), False),  
+        (date.today(), True),                        
+        (date.today() + timedelta(days=1), True),   
+    ],
+)
+def test_foodproduct_expiry_one_day(expiry: date, should_pass: bool) -> None:
+    """Test FoodProduct expiry validator on boundary values."""
+    
+    if should_pass:
+        product = FoodProduct(
+            product_id="F3",
+            product_name="Cheese",
+            quantity=2,
+            price=8.0,
+            expiry_date=expiry,
+        )
+        assert product.expiry_date == expiry
+    else:
+        with pytest.raises(ValueError, match="Expiry date cannot be in the past"):
+            FoodProduct(
+                product_id="F3",
+                product_name="Cheese",
+                quantity=2,
+                price=8.0,
+                expiry_date=expiry,
+            )
+
+
+@pytest.mark.parametrize(
+    "expiry",
+    [
+        date.today() - timedelta(days=10),
+        date(1990, 1, 1),
+    ],
+)
+def test_foodproduct_expiry_past(expiry: date) -> None:
+    """Test FoodProduct expiry validator with invalid past dates."""
+
+    with pytest.raises(ValueError, match="Expiry date cannot be in the past"):
+        FoodProduct(
+            product_id="F4",
+            product_name="Yogurt",
+            quantity=4,
+            price=6.0,
+            expiry_date=expiry,
+        )
+
+
+@pytest.mark.parametrize(
+    "author",
+    [
+        "J.K. Rowling",
+        "George Orwell",
+        "A",
+    ],
+)
+def test_bookproduct_author(author: str) -> None:
+    """Test BookProduct author validator with valid non-empty names."""
+    
+    product = BookProduct(
+        product_id="B1",
+        product_name="1984",
+        quantity=10,
+        price=15.0,
+        author=author,
+    )
+
+    assert product.author == author
+
+
+@pytest.mark.parametrize(
+    "author",
+    [
+        "  Tolkien",
+        "Rowling  ",
+        "  Mark Twain  ",
+        "\nHemingway\n",
+        "\tOrwell\t",
+    ],
+)
+def test_bookproduct_author_whitespace(author: str) -> None:
+    """Test BookProduct author validator with names containing leading/trailing whitespace."""
+    
+    product = BookProduct(
+        product_id="B2",
+        product_name="LOTR",
+        quantity=3,
+        price=20.0,
+        author=author,
+    )
+
+    assert product.author.strip() != ""
+
+
+@pytest.mark.parametrize(
+    "author, should_pass",
+    [
+        ("A", True),      
+        (" ", False),     
+        ("", False),      
+    ],
+)
+def test_bookproduct_author_min_max_validation(author: str, should_pass: bool) -> None:
+    """Test BookProduct author validator on boundary values."""
+
+    if should_pass:
+        product = BookProduct(
+            product_id="B3",
+            product_name="Short Book",
+            quantity=1,
+            price=5.0,
+            author=author,
+        )
+        assert product.author == author
+    else:
+        with pytest.raises(ValueError, match="Author name cannot be empty"):
+            BookProduct(
+                product_id="B3",
+                product_name="Short Book",
+                quantity=1,
+                price=5.0,
+                author=author,
+            )
+
+
+@pytest.mark.parametrize(
+    "author",
+    [
+        "   ",
+        "",
+        "\n",
+        "\t",
+    ],
+)
+def test_bookproduct_author_invalid(author: str) -> None:
+    """Test BookProduct author validator with invalid empty or whitespace-only names."""
+    
+    with pytest.raises(ValueError, match="Author name cannot be empty"):
+        BookProduct(
+            product_id="B4",
+            product_name="Bad Book",
+            quantity=2,
+            price=10.0,
+            author=author,
+        )
 
