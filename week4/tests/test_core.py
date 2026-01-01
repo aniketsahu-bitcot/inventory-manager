@@ -446,7 +446,11 @@ def test_load_products_from_csv_when_csv_cannot_be_read(mocker) -> None:
         inv.load_products_from_csv("fake.csv")
 
 
-def test_load_products_from_csv_file_not_found(mocker):
+def test_load_products_from_csv_file_not_found(mocker) -> None:
+    """
+    Ensure that attempting to load a CSV file that does not exist
+    raises a PermissionError.
+    """
     mocker.patch.object(Path, "exists", return_value=False)
 
     inv = Inventory()
@@ -608,8 +612,11 @@ def test_report_invalid_quantity_type(mocker) -> None:
         inventory.generate_low_stock_report(output_file="dummy.txt")
 
 
-
-def test_errors_log_write_fails(mocker):
+def test_errors_log_write_fails(mocker) -> None:
+    """
+    Verify that a PermissionError is raised when the inventory attempts
+    to write to errors.log but the write operation fails.
+    """
     mocker.patch.object(Path, "exists", return_value=True)
 
     mocker.patch.object(Path, "open", mock_open(read_data="product_id,product_name,quantity,price\n"))
@@ -622,7 +629,11 @@ def test_errors_log_write_fails(mocker):
         inv.load_products_from_csv("fake.csv")
 
 
-def test_error_log_write_failure_is_ignored(mocker):
+def test_error_log_write_failure_is_ignored(mocker) -> None:
+    """
+    Ensure that when writing to errors.log fails during row-level logging,
+    the exception is suppressed and normal CSV processing continues.
+    """
     csv_data = (
         "product_id,product_name,quantity,price\n"
         "P1,Laptop,5,0\n"
