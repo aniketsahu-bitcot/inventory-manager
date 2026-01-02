@@ -28,7 +28,13 @@ A professional command-line Python package for inventory management that reads i
 - `pyproject.toml` comprises the cofiguration data.
 - `errors.log` file containing error logs, `inventory.csv` file containing products data in csv format, and `low_stock_report.txt` containing low stock products data.
 
-
+#### Week 4: Test-Driven Development (TDD) with Pytest
+- `tests/` directory contains unit tests for `Inventory` & `Product` public methods and test cases following AAA pattern.
+- `Inventory` class contains `get_inventory_value()` which is tested by test cases
+- Subclasses of `Product` class containing validation method which are tested with @pytest.mark.parametrize.
+- fixtures for pre-configured `Product` and `Inventory` instances are used in test cases.
+- pytest-mock is used to mock CSV loading and file writing.
+- 100% test coverage for the `inventory_manager` package has achieved using pytest-cov.
 
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
@@ -38,3 +44,9 @@ A professional command-line Python package for inventory management that reads i
 - Implement Python package `inventory_manager` with modules and __init__.py.
 - Create & configure a pyproject.toml file.
 - Use Ruff linter, Black formatter, Google-style docstrings and full type hints to make code professionally good.
+- Validate all public methods in `Inventory` and `Product` through unit tests.
+- Practice TDD by writing a failing test before implementing `get_inventory_value()`.
+- Use fixtures and the Arrange-Act-Assert pattern to keep tests clean and readable.
+- Learn mocking to safely test file I/O without touching the real filesystem.
+- Improve reliability by parametrizing validation tests with multiple inputs.
+- Achieve >95% coverage to confirm every part of the package is tested.

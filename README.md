@@ -16,10 +16,15 @@ A professional command-line Python package for inventory management.
 - `inventory_manager` is the python package containing `init.py` file with modules.
 - `pyproject.toml` file contains configuration data.
 - Ruff linter, Black formatter, Google-style docstrings and full type hints are used to make code professionally good.
+- Added a tests/ suite with unit tests for all public methods in `Product` and `Inventory`, following TDD and the Arrange–Act–Assert pattern.
+- Fixtures are used to supply reusable Product and Inventory objects, following the Arrange–Act–Assert pattern.
+- Mocking is used to safely test file I/O, including CSV loading and writing low-stock reports, without touching real files.
+- Validation logic is tested using @pytest.mark.parametrize with multiple valid and invalid inputs.
+- Test coverage is measured using pytest-cov, achieving 100% coverage for the inventory_manager package.
 ---
 
 ### Learning Journey
-- [Week 1 to 3 Overview](Docs/INDEX.md)
+- [Week 1 to 4 Overview](Docs/INDEX.md)
 - [Architecture](Docs/ARCHITECTURE.md)
 - [Setup & Installation](Docs/SETUP.md)
 - [Testing Guide](Docs/TESTING.md)
@@ -28,6 +33,7 @@ A professional command-line Python package for inventory management.
 
 ### Tech Stack
 - Language: Python
-- Libraries & Frameworks: csv and pathlib
+- Libraries & Frameworks: csv, pathlib, pydantic, pytest, pytest-mock
+- Testing & Coverage: pytest-cov
 - Code Quality: ruff and black
 ---
