@@ -108,3 +108,17 @@ Run a Python file:
 ```bash
 python main.py
 ```
+
+#### Week 4 Run Instructions
+
+Run all test cases of tests directory:
+
+```bash
+PYTHONPATH=./week3 pytest
+```
+Generate coverage report for the inventory_manager package:
+
+```bash
+PYTHONPATH=./week3 pytest --cov=week3 --cov-report=term-missing --cov-config=.coveragerc
+```
+

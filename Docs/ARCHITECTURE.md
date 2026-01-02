@@ -20,13 +20,19 @@ INVENTORY-MANAGER
 │   ├── inventory.csv
 │   ├── low_stock_report.txt
 │   └── process_inventory.py
-└── week3
-    ├── errors.log
-    ├── inventory.csv
-    ├── inventory_manager
-    │   ├── core.py
-    │   ├── __init__.py
-    │   └── models.py
-    ├── low_stock_report.txt
-    └── main.py  
+├── week3
+│   ├── errors.log
+│   ├── __init__.py
+│   ├── inventory.csv
+│   ├── inventory_manager
+│   │   ├── core.py
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   ├── low_stock_report.txt
+│   ├── main.py
+└── week4
+    └── tests
+        ├── conftest.py
+        ├── test_core.py
+        └── test_models.py
 ```

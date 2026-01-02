@@ -1,0 +1,4 @@
+[run]
+omit =
+    week3/main.py
+    week3/__init__.py
