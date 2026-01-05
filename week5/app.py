@@ -5,4 +5,15 @@ This module creates the FastAPI app instance and includes the API router that ex
 It integrates the existing `inventory_manager` package which handles all inventory operations.
 """
 
+from fastapi import FastAPI
+from week5.api.routes import router
+
+app = FastAPI()
+
+app.include_router(
+    router,
+    prefix="/api",
+    tags=["Products"]
+)
+
 
