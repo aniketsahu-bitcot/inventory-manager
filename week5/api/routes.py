@@ -44,15 +44,22 @@ def create_product(product: Product) -> Product:
     """
     Create a new product in the inventory.
     """
-    existing = inventory.get_product(product.product_id)
-    if existing:
+
+    try:
+        inventory.add_product(product)
+    except ValueError as e:
+
+        if "already exists" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=str(e),
+            )
+        
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Product with this ID already exists",
+            detail=str(e),
         )
 
-    inventory.products.append(product)
-    inventory._product_map[product.product_id] = product
     return product
 
 @router.put("/products/{product_id}", response_model=Product)

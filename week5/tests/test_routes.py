@@ -210,11 +210,11 @@ def test_create_product_large_value_price(client: TestClient) -> None:
 
 def test_create_product_duplicate_id(client: TestClient) -> None:
     """
-    Creating a product with an existing ID should return 400.
+    Creating a product with an existing ID should return 409 Conflict.
     """
     
     payload = {
-        "product_id": "101",  
+        "product_id": "101",
         "product_name": "Duplicate Test",
         "quantity": 1,
         "price": 10.0,
@@ -222,8 +222,10 @@ def test_create_product_duplicate_id(client: TestClient) -> None:
 
     response = client.post("/api/products", json=payload)
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["detail"] == "Product with this ID already exists"
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert "already exists" in response.json()["detail"]
+
+
 
 def test_create_product_invalid_body(client: TestClient) -> None:
     """
@@ -237,6 +239,26 @@ def test_create_product_invalid_body(client: TestClient) -> None:
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
+def test_create_product_invalid_value(monkeypatch, client: TestClient) -> None:
+    """Test create_product route triggers HTTP 400 via simulated ValueError."""
+    
+    def fake_add_product(product) -> None:
+        """Simulate a ValueError in Inventory.add_product."""
+        raise ValueError("Some custom error")
+
+    monkeypatch.setattr("week5.api.routes.inventory.add_product", fake_add_product)
+
+    payload = {
+        "product_id": "999",
+        "product_name": "Test Product",
+        "quantity": 5,
+        "price": 50.0,
+    }
+
+    response = client.post("/api/products", json=payload)
+
+    assert response.status_code == 400
+    assert "Some custom error" in response.json()["detail"]
 
 
 def test_update_product(client: TestClient) -> None:
