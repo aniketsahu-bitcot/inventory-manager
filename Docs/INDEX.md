@@ -1,7 +1,7 @@
 # inventory-manager Project
 
 ### 1. Introduction
-A professional command-line Python package for inventory management that reads inventory.csv, validates products using Pydantic, logs errors, and generates low-stock reports.
+Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly.
 
 ### 2. Features
 
@@ -36,6 +36,16 @@ A professional command-line Python package for inventory management that reads i
 - pytest-mock is used to mock CSV loading and file writing.
 - 100% test coverage for the `inventory_manager` package has achieved using pytest-cov.
 
+#### Week 5: Building a Web API with FastAPI
+- `main.py` file contains “Hello, World!” FastAPI app & `@app.route()` maps URLs to Python functions.
+- `week5` directory contains structured FastAPI project & integrates `inventory_manager` package.
+-  `week5/api/` directory contains `routes.py` file which comprises CRUD-style API endpoints:
+  - **GET /products** – fetch all products
+  - **GET /products/<product_id>** – fetch a single product
+  - **POST /products** – validate JSON input and create a product
+  - **PUT /products/<product_id>** – update an existing product
+- `week5/tests/` directory contains test cases including FastAPI’s test client and pytest to write integration tests.
+
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
 - Implement core functionality to read inventory.csv, load & validate rows with Pydantic, log invalid entries to errors.log, and create low_stock_report.txt for items under 10 units.
@@ -50,3 +60,7 @@ A professional command-line Python package for inventory management that reads i
 - Learn mocking to safely test file I/O without touching the real filesystem.
 - Improve reliability by parametrizing validation tests with multiple inputs.
 - Achieve >95% coverage to confirm every part of the package is tested.
+- Expose inventory functionality through a clean REST API, following HTTP standards and resource-based routing.
+- Reuse business logic across layers so the API calls the real package instead of duplicating logic.
+- Encourage scalable software engineering practices, including modular FastAPI blueprints and layered design.
+- Ensure comprehensive test coverage of the FastAPI layer using pytest-cov, with integration tests exercising all API endpoints and behaviours to guarantee reliability and safe future enhancements.
