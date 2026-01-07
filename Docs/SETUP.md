@@ -122,3 +122,21 @@ Generate coverage report for the inventory_manager package:
 PYTHONPATH=./week3 pytest --cov=week3 --cov-report=term-missing --cov-config=.coveragerc
 ```
 
+#### Week 5 Run Instructions
+
+Run all test cases of tests directory:
+
+```bash
+PYTHONPATH=./week3 pytest
+```
+Generate coverage report:
+
+```bash
+PYTHONPATH=./week3 pytest --cov=week5 --cov-report=term-missing
+```
+
+Access APIs by loading uvicorn server:
+
+```bash
+PYTHONPATH=./week3 uvicorn week5.app:app --reload
+```

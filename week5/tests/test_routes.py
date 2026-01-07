@@ -153,6 +153,19 @@ def test_create_product(client: TestClient) -> None:
     data = response.json()
     assert data == payload
 
+def test_create_many_products(client: TestClient) -> None:
+    """Test creating 50 products in bulk via the POST /api/products endpoint."""
+
+    for i in range(1,51):
+        payload = {
+            "product_id": f"bulk_{i}",
+            "product_name": f"Product {i}",
+            "quantity": i,
+            "price": float(i),
+        }
+        response = client.post("/api/products", json=payload)
+        assert response.status_code == 201
+
 def test_create_product_min_quantity(client: TestClient) -> None:
     """
     quantity = 0 should still be valid.
@@ -169,6 +182,21 @@ def test_create_product_min_quantity(client: TestClient) -> None:
 
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["quantity"] == 0
+
+def test_create_product_extremely_large_quantity(client: TestClient) -> None:
+    """
+    Test creating a product with an extremely large quantity.
+    """
+    payload = {
+        "product_id": "BIG999",
+        "product_name": "Huge Quantity",
+        "quantity": 10_000_000_000,
+        "price": 99.99,
+    }
+
+    response = client.post("/api/products", json=payload)
+
+    assert response.status_code in (200, 201, 400, 422)
 
 def test_create_product_with_whitespace_product_id(client) -> None:
     """
@@ -225,6 +253,98 @@ def test_create_product_duplicate_id(client: TestClient) -> None:
     assert response.status_code == status.HTTP_409_CONFLICT
     assert "already exists" in response.json()["detail"]
 
+def test_create_product_invalid_quantity_type(client: TestClient) -> None:
+    """
+    Non-integer quantity should trigger validation error (422)."""
+    payload = {
+        "product_id": "T100",
+        "product_name": "Invalid Quantity",
+        "quantity": "abc",  
+        "price": 10.5,
+    }
+
+    response = client.post("/api/products", json=payload)
+    assert response.status_code == 422
+
+def test_create_product_negative_quantity(client: TestClient) -> None:
+    """
+    Negative quantity should trigger validation error (400 or 422).
+    """
+    payload = {
+        "product_id": "N100",
+        "product_name": "Negative Quantity",
+        "quantity": -5,
+        "price": 10.0,
+    }
+
+    response = client.post("/api/products", json=payload)
+
+    assert response.status_code in (400, 422)
+
+def test_create_product_float_quantity(client: TestClient) -> None:
+    """
+    Float quantity should trigger validation error (422).
+    """
+    payload = {
+        "product_id": "1001",
+        "product_name": "Float Quantity",
+        "quantity": 10.5,
+        "price": 20,
+    }
+
+    response = client.post("/api/products", json=payload)
+    assert response.status_code == 422
+
+
+def test_create_product_negative_price(client: TestClient) -> None:
+    """
+    Negative price should trigger validation error (400 or 422)."""
+    payload = {
+        "product_id": "N101",
+        "product_name": "Negative Price",
+        "quantity": 5,
+        "price": -10.0,
+    }
+
+    response = client.post("/api/products", json=payload)
+
+    assert response.status_code in (400, 422)
+
+def test_create_product_invalid_price_type(client: TestClient) -> None:
+    """
+    Non-float price should trigger validation error (422)."""
+    payload = {
+        "product_id": "1000",
+        "product_name": "Invalid Price",
+        "quantity": 5,
+        "price": "abc",
+    }
+
+    response = client.post("/api/products", json=payload)
+    assert response.status_code == 422
+
+def test_create_product_very_long_name(client: TestClient) -> None:
+    """
+    Very long product_name should be accepted."""
+    long_name = "A" * 500
+
+    payload = {
+        "product_id": "1002",
+        "product_name": long_name,
+        "quantity": 2,
+        "price": 50,
+    }
+
+    response = client.post("/api/products", json=payload)
+    assert response.status_code == 201
+
+
+def test_create_product_no_body(client: TestClient) -> None:
+    """
+    Missing request body should trigger validation error (422)."""
+    response = client.post("/api/products")
+
+    assert response.status_code == 422
 
 
 def test_create_product_invalid_body(client: TestClient) -> None:
@@ -260,6 +380,23 @@ def test_create_product_invalid_value(monkeypatch, client: TestClient) -> None:
     assert response.status_code == 400
     assert "Some custom error" in response.json()["detail"]
 
+def test_product_id_case_sensitivity(client: TestClient) -> None:
+    """
+    Ensure product_id is case-sensitive.
+    """
+    payload = {
+        "product_id": "ABC",
+        "product_name": "Case Test",
+        "quantity": 3,
+        "price": 30,
+    }
+
+    client.post("/api/products", json=payload)
+
+    response = client.get("/api/products/abc")
+    assert response.status_code == 404
+
+
 
 def test_update_product(client: TestClient) -> None:
     """
@@ -292,6 +429,29 @@ def test_update_product_zero_quantity(client) -> None:
     response = client.put("/api/products/102", json=payload)
 
     assert response.status_code == 404
+
+def test_update_product_negative_price(client: TestClient) -> None:
+    """
+    Updating a product with negative price should fail validation."""
+    create_payload = {
+        "product_id": "1004",
+        "product_name": "To Update",
+        "quantity": 2,
+        "price": 10,
+    }
+
+    client.post("/api/products", json=create_payload)
+
+    update_payload = {
+        "product_id": "1004",
+        "product_name": "To Update",
+        "quantity": 2,
+        "price": -5,
+    }
+
+    response = client.put("/api/products/1004", json=update_payload)
+    assert response.status_code == 422
+
 
 
 def test_update_product_empty_name(client, mock_inventory) -> None:
@@ -347,6 +507,27 @@ def test_update_product_not_found(client: TestClient) -> None:
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Product not found"
 
+def test_update_product_partial_body(client: TestClient) -> None:
+    """
+    Partial update payload should fail validation."""
+    
+    create_payload = {
+        "product_id": "P200",
+        "product_name": "Original",
+        "quantity": 5,
+        "price": 10.0,
+    }
+    client.post("/api/products", json=create_payload)
+
+    
+    update_payload = {
+        "product_name": "Only Name Sent"
+    }
+
+    response = client.put("/api/products/P200", json=update_payload)
+
+    assert response.status_code == 422
+
 
 def test_update_product_invalid_body(client: TestClient) -> None:
     """
@@ -358,6 +539,29 @@ def test_update_product_invalid_body(client: TestClient) -> None:
     response = client.put("/api/products/101", json=payload)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+def test_update_product_attempt_change_id(client: TestClient) -> None:
+    """
+    Attempting to change product_id in update should return 400."""
+
+    create_payload = {
+        "product_id": "U300",
+        "product_name": "Original",
+        "quantity": 3,
+        "price": 50.0,
+    }
+    client.post("/api/products", json=create_payload)
+
+    update_payload = {
+        "product_id": "DIFFERENT_ID",
+        "product_name": "Updated",
+        "quantity": 3,
+        "price": 50.0,
+    }
+
+    response = client.put("/api/products/U300", json=update_payload)
+
+    assert response.status_code == 400
 
 
 def test_update_product_path_body_id_mismatch(client: TestClient) -> None:
