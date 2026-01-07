@@ -1,12 +1,24 @@
 Row 5 failed validation:
- - Quantity and price must be numeric.
+ - 1 validation error for Product
+quantity
+  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='twenty', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_parsing
 
 Row 6 failed validation:
- - Price must be a positive number
+ - 1 validation error for Product
+price
+  Input should be greater than 0 [type=greater_than, input_value='-45.00', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/greater_than
 
 Row 7 failed validation:
- - Quantity and price must be numeric.
+ - 1 validation error for Product
+quantity
+  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_parsing
 
 Row 8 failed validation:
- - Quantity and price must be numeric.
+ - 1 validation error for Product
+price
+  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='free', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/float_parsing
 

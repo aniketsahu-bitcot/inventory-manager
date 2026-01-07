@@ -29,10 +29,20 @@ INVENTORY-MANAGER
 │   │   ├── __init__.py
 │   │   ├── models.py
 │   ├── low_stock_report.txt
-│   ├── main.py
-└── week4
+│   └──  main.py
+├── week4
+│   └── tests
+│       ├── conftest.py
+│       ├── test_core.py
+│       └── test_models.py
+└── week5
+    ├── api
+    │   ├── __init__.py
+    │   └── routes.py
+    ├── app.py
+    ├── main.py
     └── tests
         ├── conftest.py
-        ├── test_core.py
-        └── test_models.py
+        ├── __init__.py
+        └── test_routes.py
 ```

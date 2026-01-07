@@ -2,3 +2,4 @@
 omit =
     week3/main.py
     week3/__init__.py
+    week5/main.py

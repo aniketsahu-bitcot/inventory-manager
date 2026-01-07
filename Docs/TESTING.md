@@ -12,6 +12,7 @@ This document explains the testing strategy used in this project, the tools invo
   - **Green**: Write minimal code to pass the test
   - **Refactor**: Improve code while keeping tests green
 - **Pytest** is used as the primary testing framework.
+- **FastAPI TestClient** is used to simulate real HTTP requests in integration tests without running a live server.
 - Test functions are written and executed using `pytest` to validate behavior early.
 - **Pytest fixtures** provide reusable and pre-configured test data.
 - The **Arrange–Act–Assert (AAA)** pattern is followed in every test to improve clarity and consistency.
@@ -30,6 +31,7 @@ This document explains the testing strategy used in this project, the tools invo
 - Mocking/Patching
 - Parametrization
 - Test Coverage
+- Use FastAPI TestClient for API integration testing
 
 ---
 
@@ -40,11 +42,12 @@ This document explains the testing strategy used in this project, the tools invo
 - Mocking (patching) replaces real external dependencies with controlled fake objects, enabling isolated and predictable tests.
 - Parametrization allows testing a single method against multiple input scenarios, including edge and error cases.
 - Test coverage measures which parts of the code are executed by tests, helping identify untested logic (but not guaranteeing bug-free code).
-
+- FastAPI TestClient allows testing request/response behavior realistically while running in-process.
 --- 
 
 ### 5. Tools Used
 - **pytest** – Test framework
+- **FastAPI TestClient** — for API integration tests  
 - **fixtures** – Test setup and reuse
 - **ruff** – Code quality and linting
 - **black**  – For code formatting
@@ -78,4 +81,4 @@ This document explains the testing strategy used in this project, the tools invo
 - Assuming 100% test coverage means bug-free code
 
 ### 8. Conclusion
-Testing ensures code correctness, improves design, and provides confidence during refactoring and feature development. Effective unit testing with Pytest uses fixtures, mocking, and parametrization to create fast, reliable, and maintainable tests, while coverage helps identify gaps but does not guarantee bug-free code.
+Testing ensures correctness, improves design quality, and builds confidence when adding features or refactoring. Effective unit testing with Pytest uses fixtures, mocking, parametrization, and **FastAPI TestClient** to create **fast, reliable, and maintainable** tests.Coverage helps identify gaps — but meaningful tests and good design always matter more than numbers.
