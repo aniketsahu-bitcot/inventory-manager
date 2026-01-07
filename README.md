@@ -1,9 +1,10 @@
 # inventory-manager
-inventory-manager is a Python tool for managing product inventory in a clean and reliable way. It reads products from a CSV file, checks that the data is valid, and logs any errors without stopping the program. The project uses simple, modular code so new product types can be added easily. It also includes a FastAPI web API and a full test suite using pytest to make sure everything works correctly.
+
+Inventory-manager is a Python tool for managing product inventory in a clean and reliable way. It reads products from a CSV file, checks that the data is valid, and logs any errors without stopping the program. The project uses simple, modular code so new product types can be added easily. It also includes a FastAPI web API and a full test suite using pytest to make sure everything works correctly.
+
 ---
 
 ### Features
-
 - Uses a private inventory-manager GitHub repository with a standard Git workflow (main, develop, and feature branches).
 - Includes essential project files and maintains version control through structured commits and remote pushes.
 - Reads and validates inventory.csv using a Pydantic Product model with strict data constraints.
