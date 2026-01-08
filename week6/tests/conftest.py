@@ -6,9 +6,9 @@ It integrates the existing `inventory_manager` package which handles all invento
 """
 import pytest
 from fastapi.testclient import TestClient
-from week5.app import app
+from week6.app import app
 from week3.inventory_manager.models import Product
-from week5.api.routes import inventory as api_inventory
+from week6.api.routes import inventory as api_inventory
 from week3.inventory_manager.core import Inventory
 
 @pytest.fixture(scope="module")

@@ -6,7 +6,7 @@ It integrates the existing `inventory_manager` package which handles all invento
 """
 
 from fastapi import FastAPI
-from week5.api.routes import router
+from week6.api.routes import router
 
 app = FastAPI()
 

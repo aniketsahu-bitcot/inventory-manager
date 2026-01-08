@@ -366,7 +366,7 @@ def test_create_product_invalid_value(monkeypatch, client: TestClient) -> None:
         """Simulate a ValueError in Inventory.add_product."""
         raise ValueError("Some custom error")
 
-    monkeypatch.setattr("week5.api.routes.inventory.add_product", fake_add_product)
+    monkeypatch.setattr("week6.api.routes.inventory.add_product", fake_add_product)
 
     payload = {
         "product_id": "999",
