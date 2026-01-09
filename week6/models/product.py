@@ -2,8 +2,7 @@
 Inventory Product Database Models.
 
 This module defines SQLAlchemy declarative models for inventory products.
-It mirrors the Pydantic product models and persists them in a relational
-database using joined-table inheritance.
+It uses SINGLE-TABLE INHERITANCE.
 """
 
 from datetime import date
@@ -13,7 +12,6 @@ from sqlalchemy import (
     Integer,
     Float,
     Date,
-    ForeignKey,
     CheckConstraint,
 )
 
@@ -48,22 +46,28 @@ class Product(Base):
     price: Mapped[float] = mapped_column(
         Float,
         nullable=False,
-        doc="Unit price of the product (positive)",
+        doc="Unit price of the product (positive value)",
+    )
+
+    type: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        doc="Type of the product for polymorphic identity",
     )
 
     __table_args__ = (
-        CheckConstraint(
-            "quantity >= 0",
-            name="ck_quantity_non_negative",
-        ),
-        CheckConstraint(
-            "price > 0",
-            name="ck_price_positive",
-        ),
+        CheckConstraint("quantity >= 0", name="ck_quantity_non_negative"),
+        CheckConstraint("price > 0", name="ck_price_positive"),
     )
 
+    __mapper_args__ = {
+        "polymorphic_on": type,
+        "polymorphic_identity": "product",
+    }
+
     def get_total_value(self) -> float:
-        """Calculate total inventory value for this product."""
+        """Return the total value of this product based on quantity and unit price."""
+ 
         return self.quantity * self.price
 
 
@@ -72,21 +76,18 @@ class FoodProduct(Product):
     Represents a food product with an expiry date.
     """
 
-    __tablename__ = "food_products"
-
-    product_id: Mapped[str] = mapped_column(
-        ForeignKey("products.product_id"),
-        primary_key=True,
-    )
-
     expiry_date: Mapped[date] = mapped_column(
         Date,
         nullable=False,
     )
 
+    __mapper_args__ = {
+        "polymorphic_identity": "food",
+    }
+
     @validates("expiry_date")
     def validate_expiry_date(self, key: str, value: date) -> date:
-        """Ensure expiry date is not in the past."""
+        """Validate that the expiry date is not in the past."""
         if value < date.today():
             raise ValueError("Expiry date cannot be in the past.")
         return value
@@ -97,18 +98,15 @@ class ElectronicProduct(Product):
     Represents an electronic product with a warranty period.
     """
 
-    __tablename__ = "electronic_products"
-
-    product_id: Mapped[str] = mapped_column(
-        ForeignKey("products.product_id"),
-        primary_key=True,
-    )
-
     warranty_period: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         doc="Warranty period in months",
     )
+
+    __mapper_args__ = {
+        "polymorphic_identity": "electronic",
+    }
 
     __table_args__ = (
         CheckConstraint(
@@ -123,21 +121,19 @@ class BookProduct(Product):
     Represents a book product with an author.
     """
 
-    __tablename__ = "book_products"
-
-    product_id: Mapped[str] = mapped_column(
-        ForeignKey("products.product_id"),
-        primary_key=True,
-    )
-
     author: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
+        doc="Author of the book",
     )
+
+    __mapper_args__ = {
+        "polymorphic_identity": "book",
+    }
 
     @validates("author")
     def validate_author_not_empty(self, key: str, value: str) -> str:
-        """Ensure author name is not empty."""
+        """Validate that the author name is not empty."""
         if not value.strip():
             raise ValueError("Author name cannot be empty.")
         return value
