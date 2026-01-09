@@ -13,6 +13,7 @@ from sqlalchemy import (
     Float,
     Date,
     CheckConstraint,
+    Index,
 )
 
 from db.base import Base
@@ -89,6 +90,13 @@ class Product(Base):
             "(type != 'book') OR (author IS NOT NULL AND author <> '')",
             name="ck_book_requires_author",
         ),
+
+        CheckConstraint(
+            "type IN ('food', 'electronic', 'book')",
+            name="ck_valid_product_type",
+        ),
+        
+        Index("ix_products_type", "type"),
     )
 
     __mapper_args__ = {
@@ -108,9 +116,9 @@ class FoodProduct(Product):
     }
 
     @validates("expiry_date")
-    def validate_expiry_date(self, key: str, value: date) -> date:
-        """Validate that the expiry date is not in the past."""
-        if value < date.today():
+    def validate_expiry_date(self, key: str, value: date | None) -> date | None:
+        """Validate expiry date is not in the past."""
+        if value is not None and value < date.today():
             raise ValueError("Expiry date cannot be in the past.")
         return value
 
@@ -129,8 +137,8 @@ class BookProduct(Product):
     }
 
     @validates("author")
-    def validate_author_not_empty(self, key: str, value: str) -> str:
-        """Validate that the author name is not empty."""
-        if not value.strip():
+    def validate_author_not_empty(self, key: str, value: str | None) -> str | None:
+        """Validate that author name is not empty."""
+        if value is not None and not value.strip():
             raise ValueError("Author name cannot be empty.")
         return value
