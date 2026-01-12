@@ -6,7 +6,7 @@ and safe ORM serialization.
 """
 
 from week6.db.dependencies import get_db
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 from week6.models.product import Product
@@ -20,9 +20,15 @@ router = APIRouter()
 
 
 @router.get("/products", response_model=List[ProductRead])
-def list_products(db: Session = Depends(get_db)) -> List[Product]:
-    """List all products in the inventory."""
-    return db.query(Product).all()
+def list_products(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+) -> List[Product]:
+    """List products with pagination."""
+    offset = (page - 1) * size
+    return db.query(Product).offset(offset).limit(size).all()
+
 
 
 @router.get("/products/{product_id}", response_model=ProductRead)
@@ -55,11 +61,19 @@ def create_product(
             detail="Product with this ID already exists",
         )
 
-    product = Product(**data.model_dump())
-    db.add(product)
-    db.commit()
-    db.refresh(product)
-    return product
+    try:
+        product = Product(**data.model_dump())
+        db.add(product)
+        db.commit()
+        db.refresh(product)
+        return product
+
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to create product: {str(exc)}",
+        )
 
 
 @router.put("/products/{product_id}", response_model=ProductRead)
@@ -74,9 +88,18 @@ def update_product(
         raise HTTPException(status_code=404, detail="Product not found")
 
     update_data = data.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(product, field, value)
 
-    db.commit()
-    db.refresh(product)
-    return product
+    try:
+        for field, value in update_data.items():
+            setattr(product, field, value)
+
+        db.commit()
+        db.refresh(product)
+        return product
+
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to update product: {str(exc)}",
+        )
