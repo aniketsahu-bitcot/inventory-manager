@@ -16,7 +16,7 @@ from sqlalchemy import (
     Index,
 )
 
-from db.base import Base
+from week6.db.base import Base
 
 
 class Product(Base):
