@@ -45,22 +45,8 @@ class ProductUpdate(BaseModel):
     warranty_period: Optional[int] = Field(None, gt=0)
     author: Optional[str] = Field(None, min_length=1)
 
-    @model_validator(mode="before")
-    @classmethod
-    def validate_update(cls, values: dict[str, Any]) -> dict[str, Any]:
-        """Only validate explicitly provided type-specific fields."""
-        t = values.get("type")
-        
-        if t == "food" and "expiry_date" in values and values["expiry_date"] is None:
-            raise ValueError("Food products must have expiry_date")
-        if t == "electronic" and "warranty_period" in values and values["warranty_period"] is None:
-            raise ValueError("Electronic products must have warranty_period")
-        if t == "book" and "author" in values:
-            author = values.get("author", "")
-            if not author.strip():
-                raise ValueError("Book products must have author")
-        return values
-
+    model_config = ConfigDict(extra="forbid")  
+   
 
 class ProductRead(ProductBase):
     """Model for reading a Product from ORM."""
