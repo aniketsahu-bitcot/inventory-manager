@@ -104,16 +104,17 @@ def update_product(
             )
 
     elif current_type == "book":
-        if "author" in update_data and not (update_data["author"] or "").strip():
-            raise HTTPException(
-                status_code=422,
-                detail="Book products must have a non-empty author"
-            )
-        if data.type == "book" and not product.author.strip():
-            raise HTTPException(
-                status_code=422,
-                detail="Cannot change to book type without providing a valid author"
-            )
+
+        if "author" in update_data and not (update_data.get("author") or "").strip():
+            raise HTTPException(422, "Book products must have a non-empty author")
+
+        if data.type == "book":
+            new_author = update_data.get("author", product.author)
+            if not (new_author or "").strip():
+                raise HTTPException(
+                    status_code=422,
+                    detail="Cannot change to book type without providing a valid non-empty author"
+                )
 
     for field, value in update_data.items():
         setattr(product, field, value)
