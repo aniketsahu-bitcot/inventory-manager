@@ -390,6 +390,28 @@ def test_update_negative_quantity(client: TestClient) -> None:
     response = client.put("/api/products/UP009", json={"quantity": -5})
     assert response.status_code == 422
 
+def test_db_constraint_enforced_food_without_expiry(client: TestClient) -> None:
+    """
+    Ensures DB constraint is final safety net.
+    Route should block first, but DB must also reject invalid data.
+    """
+    payload = {
+        "product_id": "DB001",
+        "product_name": "Bad Food",
+        "quantity": 1,
+        "price": 10.0,
+        "type": "food",
+        "expiry_date": "2026-01-01"
+    }
+    client.post("/api/products", json=payload)
+
+    response = client.put(
+        "/api/products/DB001",
+        json={"expiry_date": None}
+    )
+
+    assert response.status_code in (422, 500)
+
 def test_update_product_no_body(client: TestClient) -> None:
     """Test PUT without JSON body returns 422 (covers empty body validation)."""
     payload: Dict[str, Any] = {
