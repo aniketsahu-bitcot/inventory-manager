@@ -1,6 +1,6 @@
 # inventory-manager
 
-Inventory-manager is a Python tool for managing product inventory in a clean and reliable way. It reads products from a CSV file, checks that the data is valid, and logs any errors without stopping the program. The project uses simple, modular code so new product types can be added easily. It also includes a FastAPI web API and a full test suite using pytest to make sure everything works correctly.
+Inventory-manager is a Python tool for managing product inventory reliably and efficiently. It reads products from a CSV file, validates the data, logs any errors without interrupting processing, and stores valid records in a PostgreSQL database using SQLAlchemy. The project features modular design for easily adding new product types, exposes a FastAPI web API for CRUD operations, and includes a full pytest test suite with unit and integration tests to ensure correctness and maintainability.
 
 ---
 
@@ -31,11 +31,17 @@ Inventory-manager is a Python tool for managing product inventory in a clean and
   - **PUT /products/<product_id>** – update an existing product
 - A pytest-based integration test suite is used using FastAPI’s test client to simulate real HTTP requests to the API.
 - Achieved full test coverage of the API layer using pytest-cov, ensuring reliability and confidence in changes.
+- SQLAlchemy ORM is used for database interaction, replacing CSV-based storage for robust, scalable persistence.
+- PostgreSQL is the production-ready relational database used, with proper connection handling and session management.
+- Alembic is used to manage database migrations, allowing safe schema evolution and versioning.
+- Integration tests interact with a temporary PostgreSQL test database to verify SQLAlchemy logic without affecting production data.
+- API endpoints now persist and retrieve data from PostgreSQL, ensuring real-world behavior during testing and development.
+- Database seeding scripts populate PostgreSQL with initial inventory data from inventory.csv for development and testing.
 
 ---
 
 ### Learning Journey
-- [Week 1 to 5 Overview](Docs/INDEX.md)
+- [Week 1 to 6 Overview](Docs/INDEX.md)
 - [Architecture](Docs/ARCHITECTURE.md)
 - [Setup & Installation](Docs/SETUP.md)
 - [Testing Guide](Docs/TESTING.md)
@@ -43,8 +49,9 @@ Inventory-manager is a Python tool for managing product inventory in a clean and
 ---
 ### Tech Stack
 - **Language:** Python
-- **Frameworks & Libraries:** FastAPI, Pydantic, csv, pathlib
-- **Testing:** pytest, pytest-mock, FastAPI test client
+- **Frameworks & Libraries:** FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg2
+- **Database:** PostgreSQL
+- **Testing:** pytest, pytest-mock, FastAPI TestClient
 - **Coverage:** pytest-cov
 - **Code Quality:** Ruff, Black
 

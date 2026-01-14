@@ -52,7 +52,7 @@ class Product(Base):
 
     type: Mapped[str] = mapped_column(
         String(50),
-        nullable=False,
+        nullable=True,
         doc="Type of the product (e.g., 'food', 'electronic', 'book')",
     )
 
@@ -99,11 +99,6 @@ class Product(Base):
         Index("ix_products_type", "type"),
     )
 
-    __mapper_args__ = {
-        "polymorphic_on": type,
-        "polymorphic_identity": "product",
-    }
-
     def get_total_value(self) -> float:
         """Calculate total value of the product stock."""
         return self.quantity * self.price
@@ -142,3 +137,16 @@ class BookProduct(Product):
         if value is not None and not value.strip():
             raise ValueError("Author name cannot be empty.")
         return value
+    
+
+Product.__mapper_args__ = {
+    "polymorphic_on": Product.type,
+    "polymorphic_identity": "product",
+    "polymorphic_map": {
+        "food": FoodProduct,
+        "electronic": ElectronicProduct,
+        "book": BookProduct,
+        None: Product,  
+    },
+}
+

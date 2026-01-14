@@ -1,7 +1,7 @@
 # inventory-manager Project
 
 ### 1. Introduction
-Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly.
+Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations.
 
 ### 2. Features
 
@@ -46,6 +46,23 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
   - **PUT /products/<product_id>** – update an existing product
 - `week5/tests/` directory contains test cases including FastAPI’s test client and pytest to write integration tests.
 
+#### Week 6: Persistent Data with SQLAlchemy and PostgreSQL
+- The `main.py` file initializes the FastAPI application and displays the message  
+  **"Inventory API is running"** on startup.  
+  It also registers API routes using `app.include_router()` from `week6/api/routes.py`.
+- The `week6/` directory contains a well-structured FastAPI project that integrates a
+  **PostgreSQL database** using **SQLAlchemy ORM** for persistent data storage.
+- The `week6/api/` directory contains the `routes.py` file, which defines
+  **CRUD-style API endpoints** for managing products:
+  - **GET `/products`** – Fetch all products
+  - **GET `/products/{product_id}`** – Fetch a single product by ID
+  - **POST `/products`** – Validate JSON input and create a new product
+  - **PUT `/products/{product_id}`** – Update an existing product
+- The `week6/tests/` directory contains **integration tests** written using
+  **pytest** and **FastAPI’s TestClient**, ensuring correct API behavior while
+  interacting with a real (temporary) PostgreSQL test database.
+
+
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
 - Implement core functionality to read inventory.csv, load & validate rows with Pydantic, log invalid entries to errors.log, and create low_stock_report.txt for items under 10 units.
@@ -64,3 +81,8 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
 - Reuse business logic across layers so the API calls the real package instead of duplicating logic.
 - Encourage scalable software engineering practices, including modular FastAPI blueprints and layered design.
 - Ensure comprehensive test coverage of the FastAPI layer using pytest-cov, with integration tests exercising all API endpoints and behaviours to guarantee reliability and safe future enhancements.
+- Transition from file-based storage to persistent data storage using PostgreSQL and SQLAlchemy.
+- Replace in-memory or CSV-based inventory logic with database-backed CRUD operations.
+- Use SQLAlchemy ORM models to map Python objects to relational database tables.
+- Implement integration tests that validate API behavior against a real (temporary) PostgreSQL database.
+- Apply database migrations to safely evolve the schema as application requirements change.

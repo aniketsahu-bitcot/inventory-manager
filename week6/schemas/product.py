@@ -10,7 +10,7 @@ class ProductBase(BaseModel):
     product_name: str = Field(..., min_length=1, max_length=255)
     quantity: int = Field(..., ge=0)
     price: float = Field(..., gt=0)
-    type: str = Field(..., pattern="^(food|electronic|book)$")
+    type: Optional[str] = Field(..., pattern="^(food|electronic|book)$")
     expiry_date: Optional[date] = None
     warranty_period: Optional[int] = Field(None, gt=0)
     author: Optional[str] = None
@@ -23,6 +23,7 @@ class ProductCreate(ProductBase):
     @model_validator(mode="before")
     @classmethod
     def validate_create(cls, values: dict[str, Any]) -> dict[str, Any]:
+        """Validate required fields based on product type."""
         t = values.get("type")
         if t == "food" and values.get("expiry_date") is None:
             raise ValueError("Food products must have expiry_date")
