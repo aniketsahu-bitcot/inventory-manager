@@ -64,6 +64,7 @@ def test_food_product_valid_future_expiry()-> None:
         quantity=5,
         price=20.0,
         expiry_date=date.today() + timedelta(days=10),
+        type="food",
     )
 
     assert product.expiry_date is not None
@@ -107,6 +108,7 @@ def test_book_product_valid_author()-> None:
         quantity=2,
         price=500.0,
         author="Robert C. Martin",
+        type="book",
     )
 
     assert product.author == "Robert C. Martin"
@@ -138,6 +140,7 @@ def test_electronic_product_valid_warranty()-> None:
         quantity=2,
         price=75000.0,
         warranty_period=24,
+        type="electronic",
     )
 
     assert product.warranty_period == 24
@@ -167,6 +170,7 @@ def test_polymorphic_identity_food()-> None:
         quantity=5,
         price=3.0,
         expiry_date=date.today() + timedelta(days=3),
+        type="food",
     )
 
     assert product.type == "food"
@@ -180,6 +184,7 @@ def test_polymorphic_identity_book()-> None:
         quantity=1,
         price=800.0,
         author="Author",
+        type="book",
     )
 
     assert product.type == "book"
@@ -193,6 +198,7 @@ def test_polymorphic_identity_electronic()-> None:
         quantity=1,
         price=30000.0,
         warranty_period=12,
+        type="electronic",
     )
 
     assert product.type == "electronic"
