@@ -6,3 +6,6 @@ pytest-mock==3.14.0
 pytest-cov==5.0.0
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
+SQLAlchemy==2.0.24
+python-dotenv==1.0.0
+alembic==1.13.1

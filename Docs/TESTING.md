@@ -1,7 +1,7 @@
-## Testing & Test Driven Development Practices Guide
+# Testing & Test-Driven Development (TDD) Practices Guide
 
-### 1. Introduction
-This document explains the testing strategy used in this project, the tools involved, and how to write tests effectively.
+## 1. Introduction
+This document explains the testing strategy used in this project, the tools involved, and how to write effective and maintainable tests.
 
 ---
 ### 2. Testing Philosophy
@@ -16,69 +16,81 @@ This document explains the testing strategy used in this project, the tools invo
 - Test functions are written and executed using `pytest` to validate behavior early.
 - **Pytest fixtures** provide reusable and pre-configured test data.
 - The **Arrange–Act–Assert (AAA)** pattern is followed in every test to improve clarity and consistency.
-- unit tests should avoid real filesystem, database, and network access during testing.
-- **Mocking (also called patching)** is a technique used in testing to replace real external dependencies with fake, controlled versions so your tests run fast, stable, and predictable.
-- **Parametrization** helps us to test methods with differnt kind of inputs.
-- **Test coverage** is a way to measure how much of your code is tested by your tests.
+- **Unit tests** must avoid real filesystem, database, and network access.
+- **Integration tests** may interact with real services (e.g., PostgreSQL) in a controlled and temporary test environment.
+- **Mocking** is a technique used to replace real external dependencies with controlled fake objects so tests remain fast, stable, and predictable.
+- **Patching** is a method used to apply mocks at runtime.
+- **Parametrization** allows testing the same logic with different inputs.
+- **Test coverage** measures how much of the codebase is exercised by tests.
 
 ---
-### 3. Learnings:
-- Red Green Refactor Cycle
-- Importance of Fixtures for resusability
+
+## 3. Learnings
+- Red–Green–Refactor cycle
+- Importance of fixtures for reusability
 - TDD using Pytest
-- Pytest Fixtures
-- Arrange Act Assert pattern
-- Mocking/Patching
+- Pytest fixtures
+- Arrange–Act–Assert (AAA) pattern
+- Mocking and patching
 - Parametrization
-- Test Coverage
-- Use FastAPI TestClient for API integration testing
+- Test coverage
+- Using FastAPI TestClient for API integration testing
 
 ---
 
-### 4. Key Principles
-- TDD with Pytest treats tests as specifications, emphasizing unit tests via the Testing Pyramid and the Red-Green-Refactor cycle.
-- Pytest supports reusability with simple test execution and reusable fixtures, using the Arrange-Act-Assert pattern to keep tests clean and maintainable
+## 4. Key Principles
+- TDD with Pytest treats tests as specifications, emphasizing unit tests via the Testing Pyramid and the Red–Green–Refactor cycle.
+- Pytest supports reusability through fixtures and simple test execution.
 - Unit tests must avoid real filesystem, database, and network access to remain fast, reliable, and deterministic.
-- Mocking (patching) replaces real external dependencies with controlled fake objects, enabling isolated and predictable tests.
-- Parametrization allows testing a single method against multiple input scenarios, including edge and error cases.
-- Test coverage measures which parts of the code are executed by tests, helping identify untested logic (but not guaranteeing bug-free code).
-- FastAPI TestClient allows testing request/response behavior realistically while running in-process.
---- 
+- Integration tests validate real interactions (e.g., SQLAlchemy with PostgreSQL) using a temporary test database.
+- Mocking replaces real external dependencies with controlled fake objects, enabling isolated and predictable tests.
+- Parametrization allows testing a single function against multiple valid, edge, and error scenarios.
+- Test coverage highlights untested code paths but does **not** guarantee bug-free software.
+- FastAPI TestClient enables realistic request/response testing while running in-process.
 
-### 5. Tools Used
-- **pytest** – Test framework
-- **FastAPI TestClient** — for API integration tests  
-- **fixtures** – Test setup and reuse
-- **ruff** – Code quality and linting
-- **black**  – For code formatting
-- **pytest-mock** – Provides the mocker fixture
-- **pytest-cov** – Plugin for measuring and analyzing test coverage
+---
 
+## 5. Tools Used
+- **pytest** – Testing framework  
+- **FastAPI TestClient** – API integration testing  
+- **pytest fixtures** – Test setup and reuse  
+- **pytest-mock** – Mocking and patching support  
+- **pytest-cov** – Test coverage analysis  
+- **PostgreSQL** – Real but temporary database for integration tests  
+- **SQLAlchemy** – ORM layer validation  
+- **ruff** – Code linting and quality checks  
+- **black** – Code formatting  
 
-### 6. Best Practices
+---
 
-- Write tests before code (TDD)
+## 6. Best Practices
+- Write tests before implementation (TDD)
 - Keep tests small and focused
 - Avoid testing implementation details
 - Prefer unit tests over integration tests
-- Follow the Arrange–Act–Assert (AAA) pattern for clear and consistent test structure
-- Use fixtures to avoid duplication and improve test maintainability
-- Mock external dependencies (filesystem, database, network) to keep tests fast and deterministic
-- Prefer parametrization over duplicate test functions for multiple input scenarios
-- Run tests frequently and automatically during development
-- Monitor test coverage to find untested code paths, but never rely on coverage alone for quality assurance
+- Follow the Arrange–Act–Assert (AAA) pattern
+- Use fixtures to avoid duplication and improve maintainability
+- Mock external dependencies (filesystem, network, third-party services)
+- Use parametrization instead of duplicating tests
+- Run tests frequently during development
+- Use coverage to identify gaps — **but never rely on coverage alone**
 
-### 7. Common Mistakes
+---
 
+## 7. Common Mistakes
 - Writing overly complex tests
 - Sharing state between tests
 - Skipping edge cases
-- Ignoring failing tests12. Conclusion
-- Writing tests that depend on the real filesystem, database, or network, making them slow and flaky
-- Not following the Arrange–Act–Assert (AAA) pattern, leading to confusing test structure
-- Duplicating setup code instead of using fixtures
-- Ignoring edge cases and error scenarios
-- Assuming 100% test coverage means bug-free code
+- Ignoring failing tests
+- Writing tests that depend on real filesystem, database, or network
+- Not following the Arrange–Act–Assert (AAA) pattern
+- Duplicating setup logic instead of using fixtures
+- Assuming 100% coverage means bug-free code
 
-### 8. Conclusion
-Testing ensures correctness, improves design quality, and builds confidence when adding features or refactoring. Effective unit testing with Pytest uses fixtures, mocking, parametrization, and **FastAPI TestClient** to create **fast, reliable, and maintainable** tests.Coverage helps identify gaps — but meaningful tests and good design always matter more than numbers.
+---
+
+## 8. Conclusion
+Testing improves correctness, enforces better design, and builds confidence when adding features or refactoring.  
+Effective testing with Pytest uses fixtures, mocking, parametrization, and **FastAPI TestClient** to create **fast, reliable, and maintainable** tests.
+
+**Test coverage helps identify missing tests — but meaningful test cases and good design always matter more than numbers.**

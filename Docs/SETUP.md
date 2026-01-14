@@ -140,3 +140,28 @@ Access APIs by loading uvicorn server:
 ```bash
 PYTHONPATH=./week3 uvicorn week5.app:app --reload
 ```
+
+#### Week 6 Run Instructions
+
+Run all test cases of tests directory:
+
+```bash
+pytest week6/tests
+```
+Generate coverage report:
+
+```bash
+pytest week6/tests --cov=week6 --cov-report=term-missing
+```
+
+Access APIs by loading uvicorn server:
+
+```bash
+uvicorn week6.main:app --reload
+```
+
+Populate database with `inventory.csv` data:
+
+```bash
+python3 -m week6.scripts.load_inventory
+```
