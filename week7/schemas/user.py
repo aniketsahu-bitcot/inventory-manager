@@ -1,5 +1,6 @@
 """Pydantic schemas for user data validation and serialization."""
 from pydantic import BaseModel, EmailStr
+from pydantic import Field
 
 class UserBase(BaseModel):
     """Base model for User with common fields."""
@@ -8,7 +9,11 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     """Model for creating a new User with password."""
-    password: str
+    password: str = Field(
+        ...,
+        min_length=8,
+        description="Minimum length of password should be 8 characters"
+    )
 
 class UserOut(UserBase):
     """Model for reading User data."""

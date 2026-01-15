@@ -1,12 +1,10 @@
 """Main application entry point for Authentication System."""
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from week7.db.base import Base
-from week7.db.session import engine
 from week7.api.auth import router as auth_router
-from week6.api.routes import router as products_router
+from week6.api.routes import router as products_router  
 
-
-Base.metadata.create_all(bind=engine)
+load_dotenv()
 
 app = FastAPI(title="Inventory Manager", version="1.0.0")
 

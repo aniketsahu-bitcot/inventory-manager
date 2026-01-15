@@ -1,6 +1,7 @@
 """SQLAlchemy model for the User entity."""
 from sqlalchemy import Column, Integer, String
 from week7.db.base import Base
+from sqlalchemy import Boolean
 
 class User(Base):
     """Represents a user in the system."""
@@ -12,4 +13,4 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(20), default="staff", nullable=False)  
-    is_active = Column(String(10), default="true")
+    is_active = Column(Boolean, default=True, nullable=False)
