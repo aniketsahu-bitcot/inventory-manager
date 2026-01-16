@@ -1,12 +1,12 @@
-"""Main application entry point for Authentication System."""
+"""Main application entry point for Inventory Manager with JWT."""
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from week7.api.auth import router as auth_router
-from week6.api.routes import router as products_router  
+from week7.api.auth import router as auth_router     
+from week7.api.routes import router as products_router  
 
 load_dotenv()
 
-app = FastAPI(title="Inventory Manager", version="1.0.0")
+app = FastAPI(title="Inventory Manager", version="2.0.0")
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(products_router, prefix="/products", tags=["products"])

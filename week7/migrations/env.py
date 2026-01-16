@@ -6,6 +6,11 @@ from alembic import context
 
 from week7.db.base import Base  
 from week7.models import user  # noqa: F401 
+from week6.models import product  # noqa: F401
+from week7.models.refresh_token import RefreshToken  # noqa: F401
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 config = context.config
 
