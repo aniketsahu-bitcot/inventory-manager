@@ -90,7 +90,11 @@ def refresh_token(request: Request) -> JSONResponse:
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Missing refresh token")
 
-    payload = verify_token(refresh_token, "refresh")
+    try:
+       payload = verify_token(refresh_token, "refresh")
+    except Exception:
+       raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
 
     new_access_token = create_access_token(int(payload["sub"]))
 
