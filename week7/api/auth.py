@@ -143,8 +143,8 @@ def register_user(
        return db_user
     except Exception:
        db.rollback()
-    raise HTTPException(
+       raise HTTPException(
         status_code=500,
         detail="Failed to register user"
-    )
+       )
 

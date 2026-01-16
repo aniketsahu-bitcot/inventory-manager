@@ -42,7 +42,7 @@ def create_product(
        return product
     except SQLAlchemyError:
        db.rollback()
-    raise HTTPException(500, "Failed to create product")
+       raise HTTPException(500, "Failed to create product")
 
 @router.put("/products/{product_id}", response_model=ProductRead)
 def update_product(
