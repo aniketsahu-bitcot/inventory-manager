@@ -2,9 +2,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from week7.db.session import get_db
-from week6.models.product import Product
-from week6.schemas.product import ProductRead  
-from week6.schemas.product import ProductCreate, ProductUpdate 
+from week7.models.product import Product
+from week7.schemas.product import ProductRead  
+from week7.schemas.product import ProductCreate, ProductUpdate 
 from week7.api.dependencies import get_current_user  
 from week7.models.user import User
 

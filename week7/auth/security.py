@@ -1,21 +1,53 @@
-"""Security utilities for password hashing and verification."""
+"""Security utilities for password hashing and JWT token management."""
+import os
+from datetime import datetime, timedelta
+from jose import jwt, JWTError, ExpiredSignatureError
+from dotenv import load_dotenv
+from fastapi import HTTPException
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
-import hashlib
-from datetime import datetime
 
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+load_dotenv()
 
-def generate_refresh_token() -> tuple[str, str]:
-    """Generate a secure refresh token and its hash."""
-    raw_token = secrets.token_urlsafe(32)
-    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    return raw_token, token_hash
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_EXPIRE_MIN = 30
+REFRESH_EXPIRE_DAYS = 7
 
-def is_refresh_token_expired(expiry: datetime) -> bool:
-    """Check if the refresh token is expired."""
-    return datetime.utcnow() > expiry
 
+def create_access_token(user_id: int) -> str:
+    """Create JWT access token."""
+    payload = {
+        "sub": str(user_id),
+        "type": "access",
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_EXPIRE_MIN)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def create_refresh_token(user_id: int) -> str:
+    """Create JWT refresh token."""
+    payload = {
+        "sub": str(user_id),
+        "type": "refresh",
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_token(token: str, expected_type: str) -> dict:
+    """Verify JWT token and its type."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        if payload.get("type") != expected_type:
+            raise HTTPException(status_code=401, detail="Invalid token type")
+
+        return payload
+
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 def hash_password(password: str) -> str:
     """Hash password using PBKDF2 (no 72-byte limit, no bcrypt issues)"""
