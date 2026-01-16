@@ -20,8 +20,6 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is not set")
 
 def run_migrations_offline() -> None:
     """Run migrations in offline mode."""

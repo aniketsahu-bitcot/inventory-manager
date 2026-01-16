@@ -19,7 +19,7 @@ def create_access_token(user_id: int) -> str:
     payload = {
         "sub": str(user_id),
         "type": "access",
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_EXPIRE_MIN)
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_EXPIRE_MIN),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -29,7 +29,7 @@ def create_refresh_token(user_id: int) -> str:
     payload = {
         "sub": str(user_id),
         "type": "refresh",
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -50,8 +50,9 @@ def verify_token(token: str, expected_type: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def hash_password(password: str) -> str:
-    """Hash password using PBKDF2 (no 72-byte limit, no bcrypt issues)"""
-    return generate_password_hash(password, method='pbkdf2:sha256:600000')
+    """Hash password using PBKDF2."""
+    return generate_password_hash(password, method="pbkdf2:sha256:600000")
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify password against hash"""

@@ -7,6 +7,7 @@ from week7.schemas.product import ProductRead
 from week7.schemas.product import ProductCreate, ProductUpdate 
 from week7.api.dependencies import get_current_user  
 from week7.models.user import User
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
@@ -33,10 +34,15 @@ def create_product(
         )
 
     product = Product(**data.model_dump())
-    db.add(product)
-    db.commit()
-    db.refresh(product)
-    return product
+    
+    try:
+       db.add(product)
+       db.commit()
+       db.refresh(product)
+       return product
+    except SQLAlchemyError:
+       db.rollback()
+    raise HTTPException(500, "Failed to create product")
 
 @router.put("/products/{product_id}", response_model=ProductRead)
 def update_product(
@@ -92,7 +98,14 @@ def update_product(
     for field, value in update_data.items():
         setattr(product, field, value)
 
-    db.commit()
-    db.refresh(product)
-    return product
+    try:
+        db.commit()
+        db.refresh(product)
+        return product
 
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to update product"
+        )

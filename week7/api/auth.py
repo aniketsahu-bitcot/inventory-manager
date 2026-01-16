@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from week7.schemas.user import UserCreate, UserOut
 from week7.models.user import User
-from week7.db.dependencies import get_db_session
-from week7.auth.jwt_handler import create_access_token
+from week7.auth.security import create_access_token
 from week7.db.session import get_db
 from week7.schemas.auth import LoginRequest
 from fastapi.responses import JSONResponse
@@ -112,7 +111,7 @@ def refresh_token(request: Request) -> JSONResponse:
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register_user(
     user_in: UserCreate, 
-    db: Session = Depends(get_db_session)
+    db: Session = Depends(get_db)
 )-> UserOut:
     """Register a new user with hashed password."""
 
@@ -137,8 +136,15 @@ def register_user(
         role="staff"  
     )
     
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    
-    return db_user
+    try:
+       db.add(db_user)
+       db.commit()
+       db.refresh(db_user)
+       return db_user
+    except Exception:
+       db.rollback()
+    raise HTTPException(
+        status_code=500,
+        detail="Failed to register user"
+    )
+
