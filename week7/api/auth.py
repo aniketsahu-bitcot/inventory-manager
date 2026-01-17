@@ -11,6 +11,7 @@ from week7.schemas.auth import LoginRequest
 from fastapi.responses import JSONResponse
 from week7.auth.security import ACCESS_EXPIRE_MIN, REFRESH_EXPIRE_DAYS, create_refresh_token, verify_token
 from week7.auth.security import hash_password, verify_password
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter()
 
@@ -141,14 +142,19 @@ def register_user(
     )
     
     try:
-       db.add(db_user)
-       db.commit()
-       db.refresh(db_user)
-       return db_user
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already exists"
+        )
     except Exception:
-       db.rollback()
-       raise HTTPException(
-        status_code=500,
-        detail="Failed to register user"
-       )
-
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to register user"
+        )
