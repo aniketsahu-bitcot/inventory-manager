@@ -136,24 +136,26 @@ def register_user(
     
     hashed_password = hash_password(user_in.password)
     staff_role = db.query(Role).filter(Role.name == "staff").first()
+
     db_user = User(
         username=user_in.username,
         email=user_in.email,
         hashed_password=hashed_password,
-        role=staff_role 
+        role_id=staff_role.id,
+        role="staff"
     )
     
     try:
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        
+
         return UserOut(
             id=db_user.id,
             username=db_user.username,
             email=db_user.email,
             is_active=db_user.is_active,
-            role=db_user.role.name  
+            role=db_user.role
         )
 
     
