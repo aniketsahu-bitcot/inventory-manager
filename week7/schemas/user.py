@@ -22,4 +22,5 @@ class UserOut(UserBase):
     is_active: bool
 
     class Config:
+        """ORM mode for reading from database."""
         from_attributes = True
