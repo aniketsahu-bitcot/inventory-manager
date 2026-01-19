@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from week7.auth.security import ACCESS_EXPIRE_MIN, REFRESH_EXPIRE_DAYS, create_refresh_token, verify_token
 from week7.auth.security import hash_password, verify_password
 from sqlalchemy.exc import IntegrityError
+from week7.models.role import Role
 
 router = APIRouter()
 
@@ -134,18 +135,29 @@ def register_user(
         )
     
     hashed_password = hash_password(user_in.password)
+    staff_role = db.query(Role).filter(Role.name == "staff").first()
     db_user = User(
         username=user_in.username,
         email=user_in.email,
         hashed_password=hashed_password,
-        role="staff"  
+        role=staff_role 
     )
     
     try:
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return db_user
+        
+        return UserOut(
+            id=db_user.id,
+            username=db_user.username,
+            email=db_user.email,
+            is_active=db_user.is_active,
+            role=db_user.role.name  
+        )
+
+    
+
     except IntegrityError:
         db.rollback()
         raise HTTPException(
