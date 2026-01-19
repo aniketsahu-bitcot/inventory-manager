@@ -14,5 +14,6 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
-    role = relationship("Role", back_populates="users")
+    role = Column(String(50), nullable=False, default="staff")
+    role_ref = relationship("Role")
     is_active = Column(Boolean, default=True, nullable=False)
