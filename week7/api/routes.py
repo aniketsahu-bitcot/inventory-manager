@@ -5,9 +5,10 @@ from week7.db.session import get_db
 from week7.models.product import Product
 from week7.schemas.product import ProductRead  
 from week7.schemas.product import ProductCreate, ProductUpdate 
-from week7.api.dependencies import get_current_user  
 from week7.models.user import User
 from sqlalchemy.exc import SQLAlchemyError
+from week7.api.dependencies import roles_required
+from typing import List
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ router = APIRouter()
 def create_product(
     data: ProductCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),  
+    current_user: User = Depends(roles_required("POST")),  
 ) -> Product:
     """Create a new product in the inventory. (AUTH REQUIRED)"""
     existing = (
@@ -49,7 +50,7 @@ def update_product(
     product_id: str,
     data: ProductUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),  
+    current_user: User = Depends(roles_required("PUT")),
 ) -> Product:
     """Update an existing product with proper type-dependent validation. (AUTH REQUIRED)"""
     product = db.query(Product).filter(Product.product_id == product_id).first()
@@ -109,3 +110,16 @@ def update_product(
             status_code=500,
             detail="Failed to update product"
         )
+
+@router.get("/products/{product_id}", response_model=ProductRead)
+def get_product(product_id: str, db: Session = Depends(get_db), current_user: User = Depends(roles_required("GET"))) -> Product:
+    """Retrieve a single product by ID."""
+    product = db.query(Product).filter(Product.product_id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+@router.get("/products", response_model=List[ProductRead])
+def list_products(db: Session = Depends(get_db), current_user: User = Depends(roles_required("GET"))) -> List[Product]:
+    """List all products in the inventory."""
+    return db.query(Product).all()
