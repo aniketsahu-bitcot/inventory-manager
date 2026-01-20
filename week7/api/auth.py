@@ -137,6 +137,9 @@ def register_user(
     hashed_password = hash_password(user_in.password)
     staff_role = db.query(Role).filter(Role.name == "staff").first()
 
+    if not staff_role:
+        raise HTTPException(status_code=500, detail="Default role not configured")
+
     db_user = User(
         username=user_in.username,
         email=user_in.email,
