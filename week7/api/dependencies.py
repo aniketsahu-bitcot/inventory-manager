@@ -44,6 +44,7 @@ ROLE_PERMISSIONS = {
 
 def roles_required(method: str):
     def checker(user: User = Depends(get_current_user)) -> User:
+        """Dependency to check if the current user has the required role for the HTTP method."""
 
         role_name = user.role_ref.name if user.role_ref else None
 
