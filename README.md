@@ -1,6 +1,6 @@
 # inventory-manager
 
-Inventory-manager is a Python tool for managing product inventory reliably and efficiently. It reads products from a CSV file, validates the data, logs any errors without interrupting processing, and stores valid records in a PostgreSQL database using SQLAlchemy. The project features modular design for easily adding new product types, exposes a FastAPI web API for CRUD operations, and includes a full pytest test suite with unit and integration tests to ensure correctness and maintainability.
+Inventory-manager is a Python tool for managing product inventory reliably and efficiently. It reads products from a CSV file, validates the data, logs any errors without interrupting processing, and stores valid records in a PostgreSQL database using SQLAlchemy. The project features modular design for easily adding new product types, exposes a FastAPI web API for CRUD operations, and includes a full pytest test suite with unit and integration tests to ensure correctness and maintainability. The API also includes secure JWT-based authentication and role-based access control (RBAC) to protect sensitive operations.
 
 ---
 
@@ -37,6 +37,13 @@ Inventory-manager is a Python tool for managing product inventory reliably and e
 - Integration tests interact with a temporary PostgreSQL test database to verify SQLAlchemy logic without affecting production data.
 - API endpoints now persist and retrieve data from PostgreSQL, ensuring real-world behavior during testing and development.
 - Database seeding scripts populate PostgreSQL with initial inventory data from inventory.csv for development and testing.
+- Secure user authentication implemented using JWT (JSON Web Tokens) for stateless API access.
+- User registration and login endpoints with securely hashed passwords using industry-standard hashing.
+- Role-Based Access Control (RBAC) implemented using FastAPI dependency functions.
+- User roles (`admin`, `manager`, `staff`) define permissions for accessing and modifying resources.
+- Protected API endpoints enforce authentication and authorization with proper HTTP status codes (401, 403).
+- Product-modifying routes (POST, PUT, DELETE) are restricted based on user roles.
+- Integration tests validate authentication, JWT handling, and RBAC enforcement using FastAPI TestClient.
 
 ---
 
@@ -50,6 +57,7 @@ Inventory-manager is a Python tool for managing product inventory reliably and e
 ### Tech Stack
 - **Language:** Python
 - **Frameworks & Libraries:** FastAPI, Pydantic, SQLAlchemy, Alembic, psycopg2
+- **Authentication & Security:** JWT (JSON Web Tokens), password hashing (Werkzeug)
 - **Database:** PostgreSQL
 - **Testing:** pytest, pytest-mock, FastAPI TestClient
 - **Coverage:** pytest-cov

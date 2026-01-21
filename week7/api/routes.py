@@ -123,3 +123,37 @@ def get_product(product_id: str, db: Session = Depends(get_db), current_user: Us
 def list_products(db: Session = Depends(get_db), current_user: User = Depends(roles_required("GET"))) -> List[Product]:
     """List all products in the inventory."""
     return db.query(Product).all()
+
+@router.delete(
+    "/products/{product_id}",
+    status_code=status.HTTP_200_OK
+)
+def delete_product(
+    product_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(roles_required("DELETE"))
+)-> None:
+    """Delete a product by product_id. (ADMIN ONLY)"""
+
+    product = db.query(Product).filter(Product.product_id == product_id).first()
+
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found"
+        )
+
+    try:
+        db.delete(product)
+        db.commit()
+        return {
+            "message": "Product deleted successfully",
+            "product_id": product_id
+        }
+
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete product"
+        )
