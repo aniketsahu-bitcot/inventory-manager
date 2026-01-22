@@ -165,3 +165,22 @@ Populate database with `inventory.csv` data:
 ```bash
 python3 -m week6.scripts.load_inventory
 ```
+
+#### Week 7 Run Instructions
+
+Run all test cases of tests directory:
+
+```bash
+pytest week7/tests
+```
+Generate coverage report:
+
+```bash
+pytest week7/tests --cov=week7 
+```
+
+Access APIs by loading uvicorn server:
+
+```bash
+uvicorn week7.main:app --reload
+```

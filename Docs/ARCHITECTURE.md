@@ -45,13 +45,50 @@ INVENTORY-MANAGER
 │       ├── conftest.py
 │       ├── __init__.py
 │       └── test_routes.py
-└── week6
+├── week6
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── routes.py
+│   ├── db
+│   │   ├── base.py
+│   │   ├── dependencies.py
+│   │   ├── __init__.py
+│   │   └── session.py
+│   ├── __init__.py
+│   ├── main.py
+│   ├── migrations
+│   │   ├── env.py
+│   │   ├── README
+│   │   ├── script.py.mako
+│   │   └── versions
+│   ├── models
+│   │   ├── __init__.py
+│   │   └──  product.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   └──  product.py
+│   ├── scripts
+│   │   ├── __init__.py
+│   │   └── load_inventory.py
+│   └── tests
+│       ├── conftest.py
+│       ├── test_dependencies.py
+│       ├── test_product.py
+│       └── test_routes.py
+└── week7
     ├── api
+    │   ├── auth.py
+    │   ├── dependencies.py
     │   ├── __init__.py
     │   └── routes.py
+    ├── auth
+    │   ├── __init__.py
+    │   └── security.py
+    ├── core
+    │   ├── config.py
+    │   └──  __init__.py
     ├── db
     │   ├── base.py
-    │   ├── dependencies.py
     │   ├── __init__.py
     │   └── session.py
     ├── __init__.py
@@ -64,15 +101,16 @@ INVENTORY-MANAGER
     ├── models
     │   ├── __init__.py
     │   ├── product.py
+    │   ├── role.py
+    │   └── user.py
     ├── schemas
+    │   ├── auth.py
     │   ├── __init__.py
     │   ├── product.py
-    ├── scripts
-    │   ├── __init__.py
-    │   ├── load_inventory.py
+    │   └── user.py
     └── tests
         ├── conftest.py
+        ├── test_auth.py
         └── test_routes.py
-
 
 ```

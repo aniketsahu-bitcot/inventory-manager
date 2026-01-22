@@ -22,6 +22,8 @@ This document explains the testing strategy used in this project, the tools invo
 - **Patching** is a method used to apply mocks at runtime.
 - **Parametrization** allows testing the same logic with different inputs.
 - **Test coverage** measures how much of the codebase is exercised by tests.
+- Authentication and authorization logic (JWT & RBAC) is validated through integration tests rather than unit tests, as it depends on request context and headers.
+- Security tests verify correct HTTP status codes (401, 403) for unauthenticated and unauthorized access.
 
 ---
 
@@ -35,6 +37,10 @@ This document explains the testing strategy used in this project, the tools invo
 - Parametrization
 - Test coverage
 - Using FastAPI TestClient for API integration testing
+- Testing JWT-based authentication flows
+- Testing role-based access control (RBAC)
+- Writing integration tests for protected FastAPI routes
+
 
 ---
 
@@ -47,6 +53,9 @@ This document explains the testing strategy used in this project, the tools invo
 - Parametrization allows testing a single function against multiple valid, edge, and error scenarios.
 - Test coverage highlights untested code paths but does **not** guarantee bug-free software.
 - FastAPI TestClient enables realistic request/response testing while running in-process.
+- Security features like authentication and authorization must be tested as part of API integration tests, not isolated unit tests.
+- JWT validation tests ensure that protected endpoints reject missing, invalid, or expired tokens.
+- RBAC tests ensure users can only perform actions allowed by their assigned roles.
 
 ---
 
@@ -60,6 +69,8 @@ This document explains the testing strategy used in this project, the tools invo
 - **SQLAlchemy** – ORM layer validation  
 - **ruff** – Code linting and quality checks  
 - **black** – Code formatting  
+- **JWT libraries** – Token generation and validation during authentication tests
+- **FastAPI dependencies** – Role-based access control enforcement
 
 ---
 
@@ -74,6 +85,9 @@ This document explains the testing strategy used in this project, the tools invo
 - Use parametrization instead of duplicating tests
 - Run tests frequently during development
 - Use coverage to identify gaps — **but never rely on coverage alone**
+- Always test protected routes with and without JWT tokens
+- Verify correct role restrictions using multiple user roles (staff, manager, admin)
+- Assert proper HTTP status codes for authentication and authorization failures
 
 ---
 

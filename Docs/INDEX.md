@@ -1,7 +1,7 @@
 # inventory-manager Project
 
 ### 1. Introduction
-Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations.
+Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. The API includes secure user authentication with JWTs and role-based access control (RBAC) to protect sensitive operations. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations.
 
 ### 2. Features
 
@@ -62,6 +62,23 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
   **pytest** and **FastAPI’s TestClient**, ensuring correct API behavior while
   interacting with a real (temporary) PostgreSQL test database.
 
+#### Week 7: API Security with JWT and Role-Based Access Control (RBAC)
+- A `User` model is created using SQLAlchemy with securely hashed passwords using Werkzeug.
+- **POST `/register`** endpoint is used for new user registration and **POST `/login`** endpoint for user authentication.
+- **JWT-based authentication** is used to issue tokens on login, enabling stateless secure access to API endpoints.
+- **role-based access control using FastAPI dependencies**:
+  - `roles_required` dependency – Ensures the authenticated user has one of the allowed roles (e.g., `staff`, `admin`, `manager`) before accessing a route.
+- RBAC for product endpoints:
+  - **Staff** – Can only GET products.
+  - **Manager** – Can GET, POST, PUT products.
+  - **Admin** – Full access including DELETE.
+- **DELETE `/products/{product_id}`** endpoint, protected for admin users only.
+- Integration tests for authentication and authorization like:
+  - Access without token → 401 Unauthorized
+  - Invalid/expired token → 401/422
+  - Staff attempting restricted actions → 403 Forbidden
+  - Admin performing allowed actions → Success
+
 
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
@@ -86,3 +103,4 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
 - Use SQLAlchemy ORM models to map Python objects to relational database tables.
 - Implement integration tests that validate API behavior against a real (temporary) PostgreSQL database.
 - Apply database migrations to safely evolve the schema as application requirements change.
+- Implement secure user authentication, JWT-based stateless sessions, and role-based access control (RBAC) to protect API endpoints according to user roles.
