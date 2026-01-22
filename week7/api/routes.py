@@ -1,5 +1,5 @@
 """API routes for product management with authentication."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from week7.db.session import get_db
 from week7.models.product import Product
@@ -9,6 +9,7 @@ from week7.models.user import User
 from sqlalchemy.exc import SQLAlchemyError
 from week7.api.dependencies import roles_required
 from typing import List
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -120,9 +121,15 @@ def get_product(product_id: str, db: Session = Depends(get_db), current_user: Us
     return product
 
 @router.get("/products", response_model=List[ProductRead])
-def list_products(db: Session = Depends(get_db), current_user: User = Depends(roles_required("GET"))) -> List[Product]:
-    """List all products in the inventory."""
-    return db.query(Product).all()
+def list_products(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(roles_required("GET"))
+) -> List[Product]:
+    """List products with pagination."""
+    offset = (page - 1) * size
+    return db.query(Product).offset(offset).limit(size).all()
 
 @router.delete(
     "/products/{product_id}",
@@ -132,7 +139,7 @@ def delete_product(
     product_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(roles_required("DELETE"))
-)-> None:
+) -> JSONResponse:
     """Delete a product by product_id. (ADMIN ONLY)"""
 
     product = db.query(Product).filter(Product.product_id == product_id).first()
@@ -146,10 +153,14 @@ def delete_product(
     try:
         db.delete(product)
         db.commit()
-        return {
-            "message": "Product deleted successfully",
-            "product_id": product_id
-        }
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": "Product deleted successfully",
+                "product_id": product_id
+            }
+        )
 
     except SQLAlchemyError:
         db.rollback()

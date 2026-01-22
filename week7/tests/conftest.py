@@ -10,12 +10,13 @@ from week7.models.product import Product
 from week7.auth.security import hash_password
 from typing import Any
 
-client = TestClient(app)
+PRODUCTS_BASE_URL = "/products/products"
 
-@pytest.fixture(scope="module", name="client")
-def client_fixture()-> Any:
-    """Provide a TestClient for the FastAPI app."""
-    return client
+@pytest.fixture(scope="function")
+def client() -> Any:
+    """Provide a fresh TestClient per test."""
+    with TestClient(app) as c:
+        yield c
 
 @pytest.fixture(scope="module")
 def db() -> Any:
@@ -95,7 +96,7 @@ def product(db: Session)-> Any:
     db.refresh(p)
     return p
 
-def login(username: str, password: str)-> Any:
+def login(client:TestClient,username: str, password: str)-> Any:
     """Login helper: sets access_token in TestClient cookies for further requests."""
     client.cookies.clear()
     response = client.post("/auth/login", json={"username": username, "password": password})
@@ -107,15 +108,17 @@ def login(username: str, password: str)-> Any:
     client.cookies.set("refresh_token", tokens["refresh_token"])
     return tokens
 
-def set_invalid_token()-> None:
+def set_invalid_token(client: TestClient)-> None:
     """Set an invalid access token in the TestClient cookies."""
     client.cookies.clear()
     client.cookies.set("access_token", "this.is.an.invalid.token")
 
-def login_and_get_refresh_token(username: str, password: str) -> str:
+def login_and_get_refresh_token(client: TestClient, username: str, password: str) -> str:
     """Helper to login and return the refresh token from cookies."""
     response = client.post("/auth/login", json={"username": username, "password": password})
     assert response.status_code == 200
     refresh_token = response.cookies.get("refresh_token")
     assert refresh_token is not None
     return refresh_token
+
+
