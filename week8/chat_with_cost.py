@@ -3,13 +3,14 @@ and calculates the cost based on token usage."""
 
 from openai import OpenAI
 import os
+from constants import (
+    MODEL_NAME,
+    INPUT_COST_PER_TOKEN,
+    OUTPUT_COST_PER_TOKEN,
+    SYSTEM_PROMPT,
+)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-MODEL_NAME = "gpt-5-nano"
-
-INPUT_COST_PER_TOKEN = 0.05 / 1_000_000
-OUTPUT_COST_PER_TOKEN = 0.40 / 1_000_000
 
 
 def chat()-> None:
@@ -21,9 +22,9 @@ def chat()-> None:
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_query}
-            ]
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_query},
+            ],
         )
     except Exception as e:
         print("\n API Error:", e)
