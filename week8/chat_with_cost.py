@@ -1,7 +1,9 @@
 """A simple chat application that interacts with a language model
-and calculates the cost based on token usage."""
+and calculates the cost based on token usage using LangChain."""
 
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 import os
 from constants import (
     MODEL_NAME,
@@ -10,39 +12,44 @@ from constants import (
     SYSTEM_PROMPT,
 )
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def chat()-> None:
     """Interact with the language model and calculate cost based on token usage."""
     
+    llm = ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model=MODEL_NAME,
+        temperature=0
+    )
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT),
+        ("user", "{query}")
+    ])
+    
+    chain = prompt | llm | StrOutputParser()
+    
     user_query = input("Enter your query: ")
 
     try:
-        response = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_query},
-            ],
+        response = chain.invoke({"query": user_query})
+        
+        input_tokens = llm.get_num_tokens(user_query)
+        output_tokens = llm.get_num_tokens(response)
+        total_tokens = input_tokens + output_tokens
+
+        cost = (
+            input_tokens * INPUT_COST_PER_TOKEN +
+            output_tokens * OUTPUT_COST_PER_TOKEN
         )
+
     except Exception as e:
-        print("\n API Error:", e)
+        print("\nAPI Error:", e)
         return
 
-    reply = response.choices[0].message.content
-
-    input_tokens = response.usage.prompt_tokens
-    output_tokens = response.usage.completion_tokens
-    total_tokens = input_tokens + output_tokens
-
-    cost = (
-        input_tokens * INPUT_COST_PER_TOKEN +
-        output_tokens * OUTPUT_COST_PER_TOKEN
-    )
-
     print("\n--- Response ---")
-    print(reply)
+    print(response)
 
     print("\n--- Model Used ---")
     print(MODEL_NAME)
