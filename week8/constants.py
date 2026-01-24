@@ -9,4 +9,4 @@ SYSTEM_PROMPT = "You are a helpful assistant."
 
 Embedding_MODEL = "text-embedding-3-small"
 
-
+COLLECTION_NAME = "product_embeddings"
