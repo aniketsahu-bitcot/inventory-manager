@@ -12,7 +12,7 @@ load_dotenv()
 
 POSTGRES_URL = os.getenv("DATABASE_URL")
 
-def create_vectorstore(documents: list[Document]):
+def create_vectorstore(documents: list[Document])-> PGVector:
     """Create a PGVector vector store from product documents.""" 
     
     embeddings = OpenAIEmbeddings(
