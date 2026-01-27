@@ -3,8 +3,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from week8.rag_chain_lcel import build_rag_chain, query_rag_chain
+from week7.models.user import User
+from week7.api.dependencies import roles_required
+from fastapi import Depends
 
-router = APIRouter(prefix="/chat", tags=["Chat"])
+router = APIRouter()
 
 rag_chain = None
 
@@ -36,8 +39,8 @@ def get_rag_chain()-> any:
 
     return get_rag_chain.rag_chain
 
-@router.post("/inventory", response_model=ChatResponse)
-def chat_inventory(request: ChatRequest) -> ChatResponse:
+@router.post("/inventory", response_model=ChatResponse,)
+def chat_inventory(request: ChatRequest,current_user: User = Depends(roles_required("GET"))) -> ChatResponse:
     """
     Ask questions about inventory products using RAG.
     """
