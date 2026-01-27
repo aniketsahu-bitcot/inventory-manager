@@ -1,7 +1,8 @@
 # inventory-manager Project
 
 ### 1. Introduction
-Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. The API includes secure user authentication with JWTs and role-based access control (RBAC) to protect sensitive operations. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations.
+Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. The API includes secure user authentication with JWTs and role-based access control (RBAC) to protect sensitive operations. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations. It integrates a RAG-based AI feature using LangChain and pgvector, allowing users to ask natural-language questions about inventory data.
+
 
 ### 2. Features
 
@@ -79,6 +80,17 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
   - Staff attempting restricted actions → 403 Forbidden
   - Admin performing allowed actions → Success
 
+#### week 8: Introduction to LLMs, Embeddings, and RAG
+- Direct OpenAI API is used to send user queries, format prompts, and calculate response cost.
+- Text embeddings are created using OpenAI embedding models and stored in PostgreSQL with pgvector.
+- A complete RAG pipeline is used for following tasks:
+  - Loading products data from the database.
+  - Spliting data into chunks and generating embeddings.
+  - Storing vectors in pgvector and creating a PGVector retriever.
+- An LCEL chain combining retriever + prompt + model.
+- The RAG chain with a FastAPI API, exposing a POST /chat/inventory endpoint for natural-language inventory queries.
+
+
 
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
@@ -104,3 +116,6 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
 - Implement integration tests that validate API behavior against a real (temporary) PostgreSQL database.
 - Apply database migrations to safely evolve the schema as application requirements change.
 - Implement secure user authentication, JWT-based stateless sessions, and role-based access control (RBAC) to protect API endpoints according to user roles.
+- Integrate RAG-based AI using LangChain and pgvector to allow natural-language queries on inventory data.
+- Create a FastAPI API endpoint that retrieves relevant product information and returns context-aware LLM responses.
+- Use prompt engineering and LCEL chains to keep AI logic modular, testable, and maintainable.
