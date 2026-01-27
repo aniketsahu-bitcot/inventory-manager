@@ -184,3 +184,49 @@ Access APIs by loading uvicorn server:
 ```bash
 uvicorn week7.main:app --reload
 ```
+
+#### Week 8 Run Instructions
+
+Chat and calculate cost:
+
+```bash
+python chat_with_cost.py
+```
+
+Create and store embeddings of sentences:
+
+```bash
+python store_embeddings_index.py
+```
+
+Run RAG application with langchain by following these steps:
+
+step 1: Load products into list of documents:
+
+```bash
+python load_products.py
+```
+
+step 2: Split the documents into chunks:
+
+```bash
+python split_documents.py
+```
+
+step 3: Store embeddings into vectorstore:
+
+```bash
+python create_vectorstore.py
+```
+
+step 4: Run RAG application:
+
+```bash
+python rag_chain_lcel.py
+```
+
+Run uvicorn server to test POST /chat/inventory endpoint:
+
+```bash
+uvicorn week8.main:app --reload
+```

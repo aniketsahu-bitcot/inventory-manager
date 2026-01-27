@@ -75,42 +75,55 @@ INVENTORY-MANAGER
 │       ├── test_dependencies.py
 │       ├── test_product.py
 │       └── test_routes.py
-└── week7
+├── week7
+│   ├── api
+│   │   ├── auth.py
+│   │   ├── dependencies.py
+│   │   ├── __init__.py
+│   │   └── routes.py
+│   ├── auth
+│   │   ├── __init__.py
+│   │   └── security.py
+│   ├── core
+│   │   ├── config.py
+│   │   └── __init__.py
+│   ├── db
+│   │   ├── base.py
+│   │   ├── __init__.py
+│   │   └── session.py
+│   ├── __init__.py
+│   ├── main.py
+│   ├── migrations
+│   │   ├── env.py
+│   │   ├── README
+│   │   ├── script.py.mako
+│   │   └── versions
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── product.py
+│   │   ├── role.py
+│   │   └── user.py
+│   ├── schemas
+│   │   ├── auth.py
+│   │   ├── __init__.py
+│   │   ├── product.py
+│   │   └── user.py
+│   └── tests
+│       ├── conftest.py
+│       ├── test_auth.py
+│       └── test_routes.py
+└── week8
     ├── api
-    │   ├── auth.py
-    │   ├── dependencies.py
-    │   ├── __init__.py
-    │   └── routes.py
-    ├── auth
-    │   ├── __init__.py
-    │   └── security.py
-    ├── core
-    │   ├── config.py
-    │   └──  __init__.py
-    ├── db
-    │   ├── base.py
-    │   ├── __init__.py
-    │   └── session.py
+    │   ├── chat.py
+    │   └──__init__.py
+    ├── chat_with_cost.py
+    ├── constants.py
+    ├── create_vectorstore.py
     ├── __init__.py
+    ├── load_products.py
     ├── main.py
-    ├── migrations
-    │   ├── env.py
-    │   ├── README
-    │   ├── script.py.mako
-    │   └── versions
-    ├── models
-    │   ├── __init__.py
-    │   ├── product.py
-    │   ├── role.py
-    │   └── user.py
-    ├── schemas
-    │   ├── auth.py
-    │   ├── __init__.py
-    │   ├── product.py
-    │   └── user.py
-    └── tests
-        ├── conftest.py
-        ├── test_auth.py
-        └── test_routes.py
+    ├── rag_chain_lcel.py
+    ├── split_documents.py
+    └── store_embeddings_index.py
 
 ```
