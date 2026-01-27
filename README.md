@@ -1,6 +1,7 @@
 # inventory-manager
 
-Inventory-manager is a Python tool for managing product inventory reliably and efficiently. It reads products from a CSV file, validates the data, logs any errors without interrupting processing, and stores valid records in a PostgreSQL database using SQLAlchemy. The project features modular design for easily adding new product types, exposes a FastAPI web API for CRUD operations, and includes a full pytest test suite with unit and integration tests to ensure correctness and maintainability. The API also includes secure JWT-based authentication and role-based access control (RBAC) to protect sensitive operations.
+Inventory-manager is a Python tool for managing product inventory reliably and efficiently. It reads products from a CSV file, validates the data, logs any errors without interrupting processing, and stores valid records in a PostgreSQL database using SQLAlchemy. The project features modular design for easily adding new product types, exposes a FastAPI web API for CRUD operations, and includes a full pytest test suite with unit and integration tests to ensure correctness and maintainability. The API also includes secure JWT-based authentication and role-based access control (RBAC) to protect sensitive operations. The platform integrates LLMs with a Retrieval-Augmented Generation (RAG) pipeline over PostgreSQL (pgvector), enabling accurate, context-aware natural language queries on inventory data.
+
 
 ---
 
@@ -44,6 +45,10 @@ Inventory-manager is a Python tool for managing product inventory reliably and e
 - Protected API endpoints enforce authentication and authorization with proper HTTP status codes (401, 403).
 - Product-modifying routes (POST, PUT, DELETE) are restricted based on user roles.
 - Integration tests validate authentication, JWT handling, and RBAC enforcement using FastAPI TestClient.
+- Integrates an LLM-powered natural language query feature using Retrieval-Augmented Generation (RAG) for inventory data.
+- Stores and retrieves semantic embeddings with PostgreSQL (pgvector) to provide accurate, context-aware responses.
+- Exposes a secure API endpoint for AI-driven inventory queries, with responses grounded strictly in stored product data.
+
 
 ---
 
@@ -62,5 +67,6 @@ Inventory-manager is a Python tool for managing product inventory reliably and e
 - **Testing:** pytest, pytest-mock, FastAPI TestClient
 - **Coverage:** pytest-cov
 - **Code Quality:** Ruff, Black
+- **LLM & AI stack:** langchain, langchain-openai, langchain-core, langchain-community, pgvector
 
 ---
