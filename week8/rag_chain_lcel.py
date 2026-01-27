@@ -102,7 +102,7 @@ def query_rag_chain(rag_chain, query: str)-> str:
 
 if __name__ == "__main__":
     rag_chain = build_rag_chain()
-    query = "Give all information about the product 'Mango'."
+    query = input("Enter your query: ")
     answer = query_rag_chain(rag_chain, query)
     if answer:
         print("Answer:", answer)
