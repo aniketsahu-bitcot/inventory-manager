@@ -34,7 +34,7 @@ def create_vectorstore(embeddings)-> PGVector:
         return None
 
 
-def build_retriever(vectorstore, k=3)-> any:
+def build_retriever(vectorstore, k=200)-> any:
     """Create a retriever from the vectorstore."""
     try:
         return vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": k})
@@ -102,7 +102,23 @@ def query_rag_chain(rag_chain, query: str)-> str:
 
 if __name__ == "__main__":
     rag_chain = build_rag_chain()
-    query = input("Enter your query: ")
-    answer = query_rag_chain(rag_chain, query)
-    if answer:
-        print("Answer:", answer)
+    if rag_chain is None:
+        print("[Error] Failed to build RAG chain. Exiting.")
+        exit(1)
+
+    print("Inventory Chat (type 'exit' to quit)")
+    while True:
+        query = input("\nEnter your query: ").strip()
+        if query.lower() == "exit":
+            print("Exiting chat. Goodbye!")
+            break
+
+        if not query:
+            print("Please enter a valid question.")
+            continue
+
+        answer = query_rag_chain(rag_chain, query)
+        if answer:
+            print("Answer:", answer)
+        else:
+            print("No answer could be retrieved.")
