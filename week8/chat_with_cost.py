@@ -20,7 +20,7 @@ def chat()-> None:
     llm = ChatOpenAI(
         api_key=os.getenv("OPENAI_API_KEY"),
         model=MODEL_NAME,
-        temperature=0
+        temperature=1
     )
     
     prompt = ChatPromptTemplate.from_messages([
