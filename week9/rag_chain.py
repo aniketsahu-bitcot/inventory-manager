@@ -18,8 +18,8 @@ load_dotenv()
 POSTGRES_URL = os.getenv("DATABASE_URL")
 
 def _get_cache_key(question: str, context: str) -> str:
-    """Deterministic key: normalize question + top context snippet"""
-    return f"{question.strip().lower()} | {context[:500]}"  
+    """Deterministic key: normalize question"""
+    return f"{question.strip().lower()}"  
 
 def get_cached_answer(question: str) -> Optional[str]:
     """Retrieve cached answer if available from the default full_llm_cache table."""
@@ -32,7 +32,8 @@ def get_cached_answer(question: str) -> Optional[str]:
     vectorstore = PGVector(
         collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
-        connection_string=POSTGRES_URL
+        connection_string=POSTGRES_URL,
+        use_jsonb=True
     )
     
     retriever = vectorstore.as_retriever(
@@ -65,7 +66,8 @@ def store_answer(question: str, answer: str) -> None:
     vectorstore = PGVector(
         collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
-        connection_string=POSTGRES_URL
+        connection_string=POSTGRES_URL,
+        use_jsonb=True
     )
     
     retriever = vectorstore.as_retriever(
@@ -94,7 +96,8 @@ def build_rag_chain()-> tuple:
     vectorstore = PGVector(
         collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
-        connection_string=POSTGRES_URL
+        connection_string=POSTGRES_URL,
+        use_jsonb=True
     )
     
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 200})  
