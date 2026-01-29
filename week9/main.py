@@ -10,9 +10,6 @@ from week9.api.chat import router as chat_router
 from week7.api.auth import router as auth_router
 from week7.api.routes import router as products_router
 from week7.core.config import validate_env
-import langchain
-langchain.debug = True
-langchain.verbose = True
 
 load_dotenv()
 
