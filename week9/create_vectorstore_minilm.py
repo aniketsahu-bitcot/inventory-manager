@@ -27,6 +27,8 @@ def create_vectorstore(documents: list[Document]) -> PGVector:
         embedding=embeddings,
         collection_name=NEW_COLLECTION_NAME,
         connection_string=POSTGRES_URL,
+        use_jsonb=True,
+        
     )
 
     return vectorstore
