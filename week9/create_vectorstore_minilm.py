@@ -6,8 +6,8 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 from week8.load_products import load_products
 from week8.split_documents import split_documents
-from week9.constants import HUGGINGFACE_EMBEDDING_MODEL
-from week9.constants import HUGGINGFACE_COLLECTION_NAME
+from week9.constants import HUGGINGFACE_EMBEDDING_MODEL, HUGGINGFACE_COLLECTION_NAME
+
 
 load_dotenv()
 
