@@ -27,6 +27,7 @@ dependencies = [
     "langchain-core==0.1.46",
     "langchain-community==0.0.30",
     "pgvector==0.2.5"
+    "sentence-transformers>=2.2.2"
 ]
 
 [project.optional-dependencies]
