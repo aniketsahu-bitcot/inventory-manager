@@ -6,20 +6,24 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 from week8.load_products import load_products
 from week8.split_documents import split_documents
-from week9.constants import HuggingFace_collection_name
-from week9.constants import HuggingFace_Embedding_Model
+from week9.constants import HUGGINGFACE_EMBEDDING_MODEL
+from week9.constants import HUGGINGFACE_COLLECTION_NAME
 
 load_dotenv()
 
-POSTGRES_URL = os.getenv("DATABASE_URL")
 
-NEW_COLLECTION_NAME = HuggingFace_collection_name
+try:
+    POSTGRES_URL = os.environ["DATABASE_URL"]
+except KeyError:
+    raise RuntimeError("DATABASE_URL environment variable is not set")
+
+NEW_COLLECTION_NAME = HUGGINGFACE_COLLECTION_NAME
 
 def create_vectorstore(documents: list[Document]) -> PGVector:
     """Create a PGVector vector store using sentence-transformers"""
 
     embeddings = HuggingFaceEmbeddings(
-        model_name=HuggingFace_Embedding_Model
+        model_name=HUGGINGFACE_EMBEDDING_MODEL
     )
 
     vectorstore = PGVector.from_documents(

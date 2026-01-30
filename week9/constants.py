@@ -6,6 +6,6 @@ Embedding_MODEL = "text-embedding-3-small"
 
 COLLECTION_NAME = "product_embeddings"
 
-HuggingFace_Embedding_Model="sentence-transformers/all-MiniLM-L6-v2"
+HUGGINGFACE_EMBEDDING_MODEL="sentence-transformers/all-MiniLM-L6-v2"
 
-HuggingFace_collection_name="product_embeddings_minilm_v2"
+HUGGINGFACE_COLLECTION_NAME="product_embeddings_minilm_v2"
