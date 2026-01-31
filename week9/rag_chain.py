@@ -2,11 +2,11 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models.ollama import ChatOllama
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores.pgvector import PGVector
 import os
-from week9.constants import MODEL_NAME, Embedding_MODEL, COLLECTION_NAME
+from week9.constants import OLLAMA_MODEL, Embedding_MODEL, COLLECTION_NAME
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from week7.db.session import engine 
@@ -17,40 +17,20 @@ load_dotenv()
 
 POSTGRES_URL = os.getenv("DATABASE_URL")
 
-def _get_cache_key(question: str, context: str) -> str:
+def _get_cache_key(question: str) -> str:
     """Deterministic key: normalize question"""
     return f"{question.strip().lower()}"  
 
 def get_cached_answer(question: str) -> Optional[str]:
     """Retrieve cached answer if available from the default full_llm_cache table."""
-    
-    embeddings = OpenAIEmbeddings(
-        model=Embedding_MODEL,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
-    
-    vectorstore = PGVector(
-        collection_name=COLLECTION_NAME,
-        embedding_function=embeddings,
-        connection_string=POSTGRES_URL,
-        use_jsonb=True
-    )
-    
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 200}   
-                                
-    )
 
-    docs = retriever.invoke(question)
-    context = "\n\n".join(doc.page_content for doc in docs)
-    key = _get_cache_key(question, context)
+    key = _get_cache_key(question)
 
     with Session(engine) as session:
         
         entry = session.query(FullLLMCache).filter_by(
             prompt=key,          
-            llm=MODEL_NAME
+            llm=OLLAMA_MODEL
         ).order_by(FullLLMCache.idx.asc()).first()
         
         return entry.response if entry else None
@@ -58,31 +38,12 @@ def get_cached_answer(question: str) -> Optional[str]:
 def store_answer(question: str, answer: str) -> None:
     """Store the new answer in the default full_llm_cache table."""
     
-    embeddings = OpenAIEmbeddings(
-        model=Embedding_MODEL,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
-    
-    vectorstore = PGVector(
-        collection_name=COLLECTION_NAME,
-        embedding_function=embeddings,
-        connection_string=POSTGRES_URL,
-        use_jsonb=True
-    )
-    
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 200}   
-    )
-
-    docs = retriever.invoke(question)
-    context = "\n\n".join(doc.page_content for doc in docs)
-    key = _get_cache_key(question, context)
+    key = _get_cache_key(question)
 
     with Session(engine) as session:
         entry = FullLLMCache(
             prompt=key,
-            llm=MODEL_NAME,
+            llm=OLLAMA_MODEL,
             idx=0,
             response=answer
         )
@@ -100,18 +61,24 @@ def build_rag_chain()-> tuple:
         use_jsonb=True
     )
     
-    retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 200})  
+    retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 10})  
 
-    llm = ChatOpenAI(model=MODEL_NAME, temperature=1, cache=False)  
+    llm = ChatOllama(model=OLLAMA_MODEL, temperature=0)
+
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are a helpful inventory assistant. Answer using only the provided context.
         If you don't know or the info is not in the context, say "I don't have that information".
+        
+        IMPORTANT RULES:
+        - Do NOT use markdown
+        - Do NOT use bullet points
+        - Do NOT use special characters like *, -, or **
+        - Respond in plain text only
 
         Context:
-        {context}
-
-        Use markdown formatting when helpful."""),
+        {context}"""),
+        
         ("human", "{question}")
     ])
 
