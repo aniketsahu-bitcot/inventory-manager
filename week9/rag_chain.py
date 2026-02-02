@@ -1,18 +1,13 @@
 """RAG chain construction for question answering over product inventory."""
 import os
-from typing import Optional, Tuple
+from typing import Tuple
 from dotenv import load_dotenv
-from sqlalchemy.orm import Session
-
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain.chat_models.ollama import ChatOllama
 from langchain.vectorstores.pgvector import PGVector
-from langchain_community.cache import FullLLMCache
-
-from week7.db.session import engine
+from langchain_community.chat_models import ChatOllama
 from week9.constants import OLLAMA_MODEL, HUGGINGFACE_EMBEDDING_MODEL, HUGGINGFACE_COLLECTION_NAME
 
 load_dotenv()
@@ -20,31 +15,6 @@ load_dotenv()
 POSTGRES_URL = os.getenv("DATABASE_URL")
 if not POSTGRES_URL:
     raise RuntimeError("DATABASE_URL environment variable is not set")
-
-def _get_cache_key(question: str) -> str:
-    """Deterministic key: normalize question"""
-    return question.strip().lower()
-
-
-def get_cached_answer(question: str) -> Optional[str]:
-    """Retrieve cached answer if available from the FullLLMCache table."""
-    key = _get_cache_key(question)
-    with Session(engine) as session:
-        entry = (
-            session.query(FullLLMCache)
-            .filter_by(prompt=key, llm=OLLAMA_MODEL)
-            .order_by(FullLLMCache.idx.asc())
-            .first()
-        )
-        return entry.response if entry else None
-
-def store_answer(question: str, answer: str) -> None:
-    """Store a new answer in the FullLLMCache table."""
-    key = _get_cache_key(question)
-    with Session(engine) as session:
-        entry = FullLLMCache(prompt=key, llm=OLLAMA_MODEL, idx=0, response=answer)
-        session.add(entry)
-        session.commit()
 
 
 def build_rag_chain() -> Tuple[PGVector, object]:
@@ -100,4 +70,12 @@ Context:
     )
 
     return retriever, chain
+
+def get_rag_chain()-> tuple:
+    """Singleton pattern to get or create the RAG chain and retriever."""
+    if not hasattr(get_rag_chain, "chain"):
+        retriever, chain = build_rag_chain()
+        get_rag_chain.retriever = retriever
+        get_rag_chain.chain = chain
+    return get_rag_chain.retriever, get_rag_chain.chain
 
