@@ -5,23 +5,20 @@ from langchain_community.chat_models import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from constants import OPENAI_MODEL, OLLAMA_MODEL, COLLECTION_NAME, Embedding_MODEL
+from constants import OPENAI_MODEL, OLLAMA_MODEL, HUGGINGFACE_COLLECTION_NAME, HUGGINGFACE_EMBEDDING_MODEL
 from langchain_community.vectorstores import PGVector
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-try:
-    POSTGRES_URL = os.getenv("DATABASE_URL")
-except KeyError:
+POSTGRES_URL = os.getenv("DATABASE_URL")
+if not POSTGRES_URL:
     raise RuntimeError("DATABASE_URL environment variable is not set")
 
-
-try:
-    OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
-except KeyError:
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
     raise RuntimeError("OPENAI_API_KEY environment variable is not set")
 
 
@@ -37,11 +34,12 @@ ollama_llm = ChatOllama(
 )
 
 
-embeddings = OpenAIEmbeddings(model=Embedding_MODEL, openai_api_key=OPENAI_API_KEY)
-    
+embeddings = HuggingFaceEmbeddings(
+        model_name=HUGGINGFACE_EMBEDDING_MODEL
+    ) 
 
 vectorstore = PGVector(
-        collection_name=COLLECTION_NAME,
+        collection_name=HUGGINGFACE_COLLECTION_NAME,
         embedding_function=embeddings,
         connection_string=POSTGRES_URL,
         use_jsonb=True
