@@ -1,6 +1,8 @@
 """Constants for the GPT-5 Nano model usage."""
 
-MODEL_NAME = "gpt-5-nano"
+OPENAI_MODEL = "gpt-5-nano"
+
+OLLAMA_MODEL = "llama3"
 
 Embedding_MODEL = "text-embedding-3-small"
 
