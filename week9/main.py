@@ -1,12 +1,11 @@
 """
 Main FastAPI application entry point.
-
-LLM caching with LangChain + SQLAlchemy + Alembic.
 """
 
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from week9.api.chat import router as chat_router
+from week9.api.document import router as doc_router
 from week7.api.auth import router as auth_router
 from week7.api.routes import router as products_router
 from week7.core.config import validate_env
@@ -14,7 +13,7 @@ from week7.core.config import validate_env
 load_dotenv()
 
 app = FastAPI(
-    title="Inventory Manager – Week 9",
+    title="Inventory Manager",
     version="1.1.0",
     description="Inventory RAG with LangChain LLM caching",
 )
@@ -31,7 +30,7 @@ def startup_event() -> None:
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(products_router, prefix="/products", tags=["products"])
 app.include_router(chat_router, prefix="/chat", tags=["chat"])
-
+app.include_router(doc_router, prefix="/documents", tags=["documents"])
 
 @app.get("/")
 def read_root() -> dict:
