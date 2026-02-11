@@ -1,8 +1,7 @@
 # inventory-manager Project
 
 ### 1. Introduction
-Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. The API includes secure user authentication with JWTs and role-based access control (RBAC) to protect sensitive operations. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations. It integrates a RAG-based AI feature using LangChain and pgvector, allowing users to ask natural-language questions about inventory data.
-
+Inventory-manager is a Python tool that helps manage product inventory. It reads product data from a CSV file, checks that the data is valid, and logs any errors. It also includes a web API built with FastAPI and a full set of tests to make sure everything works correctly. It uses SQLAlchemy with PostgreSQL for persistent data storage and proper data validation. The API includes secure user authentication with JWTs and role-based access control (RBAC) to protect sensitive operations. A comprehensive test suite using pytest and FastAPI TestClient ensures reliability and correctness of all CRUD operations. It integrates a RAG-based AI feature using LangChain and pgvector, allowing users to ask natural-language questions about inventory data. It extends traditional inventory management with a multi-tenant RAG framework featuring LLM caching, open-source embeddings, and support for both cloud-based and locally hosted LLMs.
 
 ### 2. Features
 
@@ -90,7 +89,12 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
 - An LCEL chain combining retriever + prompt + model.
 - The RAG chain with a FastAPI API, exposing a POST /chat/inventory endpoint for natural-language inventory queries.
 
-
+#### Week 9: Production-Ready AI & Advanced Features
+- LLM caching using LangChain with a SQLAlchemy-backed cache table to reduce redundant API calls, lowering cost and response latency.
+- Replace proprietary embeddings with open-source sentence-transformers and re-ingested all product and document data.
+- Local LLM server using Ollama (Llama 3) and integrated it via LangChain’s ChatOllama for RAG-based generation.
+- A secure multi-tenant RAG pipeline using metadata-based vector filtering for strict user-level data isolation.
+- A flexible LLM configuration to switch between cloud and local models and reviewed the system for secure and correct behavior.
 
 ### 3. Project Goals
 - A private inventory-manager repository is created, a standard Git workflow is followed, core files are added, and changes are committed and pushed.
@@ -119,3 +123,6 @@ Inventory-manager is a Python tool that helps manage product inventory. It reads
 - Integrate RAG-based AI using LangChain and pgvector to allow natural-language queries on inventory data.
 - Create a FastAPI API endpoint that retrieves relevant product information and returns context-aware LLM responses.
 - Use prompt engineering and LCEL chains to keep AI logic modular, testable, and maintainable.
+- Build a secure, multi-tenant RAG system where users can chat only with their own inventory data.
+- Reduce AI cost and latency using LLM caching, open-source embeddings, and optional local LLMs (Ollama).
+- Deliver a production-ready, well-tested, and scalable inventory AI platform using clean architecture and best practices.
