@@ -230,3 +230,23 @@ Run uvicorn server to test POST /chat/inventory endpoint:
 ```bash
 uvicorn week8.main:app --reload
 ```
+
+#### Week 9 Run Instructions
+
+store embeddings into vectorstore:
+
+```bash
+python -m week9.create_vectorstore_minilm
+```
+
+Run uvicorn server to test endpoints:
+
+```bash
+uvicorn week9.main:app --reload
+```
+
+Compare OpenAI and Ollama with the same queries and data:
+
+```bash
+python llm_comparision.py
+```

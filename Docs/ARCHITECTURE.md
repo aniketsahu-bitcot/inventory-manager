@@ -112,18 +112,42 @@ INVENTORY-MANAGER
 │       ├── conftest.py
 │       ├── test_auth.py
 │       └── test_routes.py
-└── week8
+├── week8
+│   ├── api
+│   │   ├── chat.py
+│   │   └── __init__.py
+│   ├── chat_with_cost.py
+│   ├── constants.py
+│   ├── create_vectorstore.py
+│   ├── __init__.py
+│   ├── load_products.py
+│   ├── main.py
+│   ├── rag_chain_lcel.py
+│   ├── split_documents.py
+│   └── store_embeddings_index.py
+└── week9
     ├── api
     │   ├── chat.py
-    │   └──__init__.py
-    ├── chat_with_cost.py
+    │   ├── document.py
+    │   └── __init__.py
+    ├── cache.py
     ├── constants.py
-    ├── create_vectorstore.py
+    ├── create_vectorstore_minilm.py
     ├── __init__.py
-    ├── load_products.py
+    ├── llm_comparison.py
+    ├── llm_comparison_report.txt
     ├── main.py
-    ├── rag_chain_lcel.py
-    ├── split_documents.py
-    └── store_embeddings_index.py
+    ├── migrations
+    │   ├── env.py
+    │   ├── README
+    │   ├── script.py.mako
+    │   └── versions
+    ├── models
+    │   └──  document.py
+    ├── rag_chain.py
+    └── schemas
+        ├── __init__.py
+        ├── request_model.py
+        └── response_model.py
 
 ```
